@@ -10,7 +10,7 @@ const products = [
     category: "Solar Panels",
     price: 299.99,
     rating: 4.8,
-    image: "/products/solar-panel-1.jpg",
+    image: "/solar.jpg",
     description: "High-efficiency monocrystalline solar panel with 25-year warranty",
     specs: ["400W Output", "72 Cell", "21% Efficiency"]
   },
@@ -20,7 +20,7 @@ const products = [
     category: "Inverters",
     price: 199.99,
     rating: 4.7,
-    image: "/products/inverter-1.jpg",
+    image: "/solar.jpg",
     description: "Advanced grid-tie inverter with smart monitoring capabilities",
     specs: ["5kW", "97% Efficiency", "WiFi Enabled"]
   },
@@ -30,7 +30,7 @@ const products = [
     category: "Batteries",
     price: 599.99,
     rating: 4.9,
-    image: "/products/battery-1.jpg",
+    image: "/solar.jpg",
     description: "High-capacity lithium battery for reliable energy storage",
     specs: ["10kWh", "10-year warranty", "Smart BMS"]
   },
@@ -40,7 +40,7 @@ const products = [
     category: "Optimizers",
     price: 89.99,
     rating: 4.6,
-    image: "/products/optimizer-1.jpg",
+    image: "/solar.jpg",
     description: "Power optimizer for maximum solar panel performance",
     specs: ["99.5% Efficiency", "Module-level MPPT", "Safety Shutdown"]
   }
