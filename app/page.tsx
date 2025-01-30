@@ -9,29 +9,34 @@ export default function Home() {
       {/* Hero Section */}
       <section id="home" className="pb-20 md:pt-20 md:pb-24">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          {/* Image div moved up for mobile, reordered in desktop */}
+          <div className="md:order-2 mx-auto w-full max-w-[350px] md:w-[350px]">
+            <div className="relative h-[300px] md:h-[400px] w-full rounded-xl overflow-hidden">
+              <Image 
+                src="/hero-bg.png" 
+                alt="Solar Panel Installation" 
+                fill 
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+          {/* Content div */}
+          <div className="md:order-1 text-center md:text-left">
+            <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6">
               Power Your Future with Smart Solar Solutions
             </h1>
-            <p className="text-muted-foreground text-lg mb-8">
+            <p className="text-muted-foreground text-base md:text-lg mb-6 md:mb-8">
               Transform your energy consumption with our cutting-edge solar technology. Save money while saving the planet.
             </p>
-            <div className="flex gap-4">
-              <button className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
+            <div className="flex gap-4 justify-center md:justify-start">
+              <button className="bg-primary text-primary-foreground px-4 md:px-6 py-2 md:py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
                 Get Started <ArrowRight className="w-4 h-4" />
               </button>
-              <button className="border border-border px-6 py-3 rounded-lg hover:bg-muted transition-colors">
+              <button className="border border-border px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-muted transition-colors">
                 Learn More
               </button>
             </div>
-          </div>
-          <div className="relative h-[400px] w-[350px] rounded-xl overflow-hidden">
-            <Image 
-              src="/hero-bg.png" 
-              alt="Solar Panel Installation" 
-              fill 
-              className="object-cover"
-            />
           </div>
         </div>
       </section>

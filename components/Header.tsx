@@ -68,8 +68,8 @@ export const Header = () => {
           <Link href="/" className="flex items-center space-x-2 group">
             <motion.span 
               className="text-2xl font-bold bg-primary bg-clip-text text-transparent"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 1.2 }}
             >
               <Image 
               src="/logo.png" 
