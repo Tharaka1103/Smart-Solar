@@ -115,20 +115,33 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">Our Products</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {[
-              { name: "Solar Panels", price: "From $299" },
-              { name: "Inverters", price: "From $199" },
-              { name: "Batteries", price: "From $499" },
-              { name: "Monitoring Systems", price: "From $99" },
+              { name: "Solar Panels", price: "From $299", image: "/solar.jpg" },
+              { name: "Inverters", price: "From $199", image: "/solar.jpg" },
+              { name: "Batteries", price: "From $499", image: "/solar.jpg" },
+              { name: "Monitoring Systems", price: "From $99", image: "/solar.jpg" },
             ].map((product, index) => (
-              <div key={index} className="bg-card p-6 rounded-xl border border-border hover:border-primary transition-all">
-                <div className="aspect-square bg-background rounded-lg mb-4"></div>
-                <h3 className="font-semibold">{product.name}</h3>
-                <p className="text-primary">{product.price}</p>
+              <div key={index} className="group bg-card p-6 rounded-xl border border-border hover:border-primary transition-all duration-300">
+                <div className="relative aspect-square mb-4 overflow-hidden rounded-lg">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    priority={index === 0}
+                  />
+                </div>
+                <h3 className="font-semibold text-lg">{product.name}</h3>
+                <p className="text-primary mt-2">{product.price}</p>
+                <button className="w-full mt-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  View Details
+                </button>
               </div>
             ))}
           </div>
         </div>
       </section>
+
 
       {/* Testimonials Section */}
       <section className="py-16">
