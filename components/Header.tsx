@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { ThemeSwitch } from './ThemeSwitch'
 import { motion, useScroll } from 'framer-motion'
 import { FiHome, FiInfo, FiBriefcase, FiMail, FiUsers, FiUser, FiLogOut } from 'react-icons/fi'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 
 interface User {
   name: string;
@@ -19,7 +19,6 @@ export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const [user, setUser] = useState<User | null>(null);
-  const router = useRouter()
   useEffect(() => {
     const unsubscribe = scrollY.on('change', (latest) => {
       setIsScrolled(latest > 20)
