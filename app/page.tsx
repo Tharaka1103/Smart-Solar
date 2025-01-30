@@ -1,7 +1,6 @@
 'use client'
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { Moon, Sun, ArrowRight, Phone, Mail, MapPin } from "lucide-react";
+import { ArrowRight, Phone, Mail, MapPin } from "lucide-react";
 
 export default function Home() {
 
@@ -137,7 +136,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">What Our Clients Say</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: "John Smith", role: "Homeowner", text: "Best investment we've made for our home. The savings are incredible!" },
+              { name: "John Smith", role: "Homeowner", text: "Best investment we have made for our home. The savings are incredible!" },
               { name: "Sarah Johnson", role: "Business Owner", text: "Smart Solar transformed our energy costs. Highly recommended!" },
               { name: "Mike Williams", role: "Property Manager", text: "Professional service from start to finish. Excellent support team!" },
             ].map((testimonial, index) => (

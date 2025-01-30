@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
-import { Search, Filter, ChevronDown } from 'lucide-react'
+import { Search, ChevronDown } from 'lucide-react'
 
 const products = [
   {

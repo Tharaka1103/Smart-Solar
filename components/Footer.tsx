@@ -13,7 +13,7 @@ const Footer = () => {
               <h3 className="text-xl font-bold">SolarTech Solutions</h3>
             </div>
             <p className="text-gray-300">
-              Powering a sustainable future through innovative solar solutions. We're committed to making clean energy accessible to everyone.
+              Powering a sustainable future through innovative solar solutions. We&apos;re committed to making clean energy accessible to everyone.
             </p>
           </div>
 

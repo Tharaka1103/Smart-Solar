@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeSwitch } from './ThemeSwitch'
 import { motion, useScroll } from 'framer-motion'
-import { FiHome, FiInfo, FiBriefcase, FiMail, FiBox, FiUsers, FiUser, FiLogOut } from 'react-icons/fi'
+import { FiHome, FiInfo, FiBriefcase, FiMail, FiUsers, FiUser, FiLogOut } from 'react-icons/fi'
 import { usePathname, useRouter } from 'next/navigation'
 
 interface User {
@@ -52,15 +52,6 @@ export const Header = () => {
     }
   }, [checkAuthStatus])
 
-  const handleLogout = async () => {
-    await fetch('/api/auth/user-login/logout', {
-      method: 'POST',
-      credentials: 'include'
-    })
-    setUser(null)
-    router.refresh()
-    router.push('/')
-  }
   return (
     <motion.header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
