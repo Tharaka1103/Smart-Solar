@@ -1,45 +1,119 @@
 'use client'
 import Image from "next/image";
-import { ArrowRight, Phone, Mail, MapPin } from "lucide-react";
+import { ArrowRight, Phone, Mail, MapPin, Link } from "lucide-react";
+import { FaInstagram, FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin, FaYoutube } from "react-icons/fa";
+import { useTheme } from '@/providers/ThemeProvider'
 
 export default function Home() {
 
+  const { theme } = useTheme()
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section id="home" className="pb-20 md:pt-20 md:pb-24">
-        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
-          {/* Image div moved up for mobile, reordered in desktop */}
-          <div className="md:order-2 mx-auto w-full max-w-[350px] md:w-[350px]">
-            <div className="relative h-[300px] md:h-[400px] w-full rounded-xl overflow-hidden">
-              <Image 
-                src="/hero-bg.png" 
-                alt="Solar Panel Installation" 
-                fill 
-                className="object-cover"
-                priority
-              />
-            </div>
-          </div>
-          {/* Content div */}
-          <div className="md:order-1 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6">
-              Power Your Future with Smart Solar Solutions
-            </h1>
-            <p className="text-muted-foreground text-base md:text-lg mb-6 md:mb-8">
-              Transform your energy consumption with our cutting-edge solar technology. Save money while saving the planet.
-            </p>
-            <div className="flex gap-4 justify-center md:justify-start">
-              <button className="bg-primary text-primary-foreground px-4 md:px-6 py-2 md:py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
-                Get Started <ArrowRight className="w-4 h-4" />
-              </button>
-              <button className="border border-border px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-muted transition-colors">
-                Learn More
-              </button>
-            </div>
-          </div>
-        </div>
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+              {/* Background Banner */}
+              <div className="absolute inset-0 md:right-0 md:left-auto md:w-1/2 h-full z-0">
+                <Image
+                  src="/banner1.jpg"
+                  alt="Solar Banner"
+                  fill
+                  className="object-cover opacity-40 md:opacity-100"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent to-background md:block"></div>
+              </div>
+
+              {/* Sun/Moon Image */}
+              <div className="absolute right-3 top-3 w-[300px] h-[300px] hidden md:block">
+                {theme === 'dark' ? (
+                  <Image
+                    src="/moon.png"
+                    alt="Moon"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                ) : (
+                  <Image
+                    src="/sun.png"
+                    alt="Sun"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                )}
+              </div>
+
+      
+              {/* Solar Panel 3D Image */}
+              <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[600px] h-[400px] animate-float z-10 hidden lg:block">
+                <Image
+                  src="/hero-bg.png"
+                  alt="Solar Panel"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+      
+              {/* Content */}
+              <div className="container mx-auto px-4 z-20">
+                <div className="max-w-2xl">
+                  <div className="overflow-hidden">
+                    <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-slideUp">
+                      Power Your Future With
+                      <span className="text-primary block mt-2 animate-morphText">
+                        Smart Solar Solutions
+                      </span>
+                    </h1>
+                  </div>
+                  
+                  <p className="text-xl mb-8 animate-fadeIn">
+                    Transform your energy consumption with our innovative solar solutions. 
+                    Sustainable, efficient, and future-ready.
+                  </p>
+      
+                  <div className="flex flex-col sm:flex-row gap-4 animate-slideUp delay-300">
+                    <button className="px-8 py-3 bg-primary text-white rounded-full flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors group">
+                      Get Started
+                      <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                    <button 
+                      type="submit"
+                      className="px-8 py-3 text-primary rounded-full border border-primary font-semibold relative overflow-hidden group"
+                    >
+                      <span className="relative z-10 group-hover:text-white transition-colors duration-700">Learn More</span>
+                      <div className="absolute inset-0 bg-primary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-in-out"></div>
+                    </button>
+                  </div>
+      
+                  {/* Stats */}
+                  <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-8 animate-fadeIn delay-500">
+                    <div className="flex flex-wrap gap-6 items-center">
+                      <a href="#" className="text-2xl hover:text-primary transition-colors" aria-label="Twitter">
+                        <FaTwitter size={24} />
+                      </a>
+                      <a href="#" className="text-2xl hover:text-primary transition-colors" aria-label="Facebook">
+                        <FaFacebook size={24} />
+                      </a>
+                      <a href="#" className="text-2xl hover:text-primary transition-colors" aria-label="Instagram">
+                        <FaInstagram size={24} />
+                      </a>
+                      <a href="#" className="text-2xl hover:text-primary transition-colors" aria-label="LinkedIn">
+                        <FaLinkedin size={24} />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Animated Particles */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-20 left-[20%] w-2 h-2 bg-primary rounded-full animate-float"></div>
+                <div className="absolute top-40 left-[60%] w-3 h-3 bg-primary rounded-full animate-float delay-300"></div>
+                <div className="absolute top-60 left-[80%] w-2 h-2 bg-primary rounded-full animate-float delay-700"></div>
+              </div>
       </section>
+      
 
       {/* Features Section */}
       <section id="services" className="py-12 bg-background">

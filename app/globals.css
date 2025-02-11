@@ -9,7 +9,7 @@ body {
 
 @layer base {
   :root {
-    --background: #FFFFFF;
+    --background: #f4fcec;
     --foreground: #0A0A0B;
     --card: #FFFFFF;
     --footer: #e4fccd;
@@ -73,3 +73,26 @@ body {
     @apply bg-background text-foreground;
   }
 }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes morphText {
+  0% { filter: blur(4px); opacity: 0; }
+  100% { filter: blur(0); opacity: 1; }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-slideUp { animation: slideUp 0.8s ease-out forwards; }
+.animate-fadeIn { animation: fadeIn 1s ease-out forwards; }
+.animate-morphText { animation: morphText 1s ease-out forwards; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }

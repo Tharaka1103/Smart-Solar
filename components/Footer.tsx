@@ -74,13 +74,14 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="w-full px-4 py-2 rounded bg-background border border-primary focus:outline-none focus:border-yellow-400"
+                className="w-full px-4 py-2 rounded bg-background-lg border border-primary focus:outline-none focus:border-yellow-400"
               />
               <button 
                 type="submit"
-                className="w-full bg-footer text-primary py-2 rounded border border-primary font-semibold hover:bg-primary hover:text-white transition-colors"
+                className="w-full bg-footer text-primary py-2 rounded-lg border border-primary font-semibold relative overflow-hidden group"
               >
-                Subscribe
+                <span className="relative z-10 group-hover:text-white transition-colors duration-700">Subscribe</span>
+                <div className="absolute inset-0 bg-primary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-in-out"></div>
               </button>
             </form>
           </div>
