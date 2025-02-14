@@ -55,7 +55,7 @@ export default function Home() {
               </div>
       
               {/* Content */}
-              <div className="container mx-auto px-4 z-20 mt-10">
+              <div className="container mx-auto px-4 z-20">
                 <div className="max-w-2xl">
                   <div className="overflow-hidden">
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-slideUp">
