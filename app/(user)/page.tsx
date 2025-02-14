@@ -5,12 +5,11 @@ import { FaInstagram, FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin, FaYoutube }
 import { useTheme } from '@/providers/ThemeProvider'
 
 export default function Home() {
-
   const { theme } = useTheme()
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      <section className="fixed top-0 left-0 w-full h-screen flex items-center overflow-hidden">
               {/* Background Banner */}
               <div className="absolute inset-0 md:right-0 md:left-auto md:w-1/2 h-full z-0">
                 <Image
@@ -44,7 +43,6 @@ export default function Home() {
                 )}
               </div>
 
-      
               {/* Solar Panel 3D Image */}
               <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[600px] h-[400px] animate-float z-10 hidden lg:block">
                 <Image
@@ -57,7 +55,7 @@ export default function Home() {
               </div>
       
               {/* Content */}
-              <div className="container mx-auto px-4 z-20">
+              <div className="container mx-auto px-4 z-20 mt-20">
                 <div className="max-w-2xl">
                   <div className="overflow-hidden">
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-slideUp">
@@ -113,9 +111,9 @@ export default function Home() {
                 <div className="absolute top-60 left-[80%] w-2 h-2 bg-primary rounded-full animate-float delay-700"></div>
               </div>
       </section>
-      
 
-      {/* Features Section */}
+      {/* Content that scrolls over hero */}
+      <div className="relative z-10 mt-[90vh]">
       <section id="services" className="py-12 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Our Services</h2>
@@ -167,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* Process Section */}
-      <section className="py-16">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Our Installation Process</h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -223,7 +221,7 @@ export default function Home() {
 
 
       {/* Testimonials Section */}
-      <section className="py-16">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">What Our Clients Say</h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -264,49 +262,49 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-12">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Contact Us</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary" />
-                <span>+1 (234) 567-8900</span>
+        {/* Contact Section */}
+        <section id="contact" className="bg-background py-12">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Contact Us</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 text-primary" />
+                  <span>+1 (234) 567-8900</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-primary" />
+                  <span>contact@smartsolar.com</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <span>123 Solar Street, Energy City, EC 12345</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary" />
-                <span>contact@smartsolar.com</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-primary" />
-                <span>123 Solar Street, Energy City, EC 12345</span>
-              </div>
+              <form className="space-y-4">
+                <input 
+                  type="text" 
+                  placeholder="Your Name" 
+                  className="w-full p-3 rounded-lg bg-background border border-border focus:border-primary outline-none"
+                />
+                <input 
+                  type="email" 
+                  placeholder="Your Email" 
+                  className="w-full p-3 rounded-lg bg-background border border-border focus:border-primary outline-none"
+                />
+                <textarea 
+                  placeholder="Your Message" 
+                  rows={4}
+                  className="w-full p-3 rounded-lg bg-background border border-border focus:border-primary outline-none"
+                ></textarea>
+                <button className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
+                  Send Message
+                </button>
+              </form>
             </div>
-            <form className="space-y-4">
-              <input 
-                type="text" 
-                placeholder="Your Name" 
-                className="w-full p-3 rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-              <input 
-                type="email" 
-                placeholder="Your Email" 
-                className="w-full p-3 rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-              <textarea 
-                placeholder="Your Message" 
-                rows={4}
-                className="w-full p-3 rounded-lg bg-background border border-border focus:border-primary outline-none"
-              ></textarea>
-              <button className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
-                Send Message
-              </button>
-            </form>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }
