@@ -55,7 +55,7 @@ export default function Home() {
               </div>
       
               {/* Content */}
-              <div className="container mx-auto px-4 z-20 mt-20">
+              <div className="container mx-auto px-4 z-20 mt-10">
                 <div className="max-w-2xl">
                   <div className="overflow-hidden">
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-slideUp">
@@ -86,7 +86,7 @@ export default function Home() {
                   </div>
       
                   {/* Stats */}
-                  <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-8 animate-fadeIn delay-500">
+                  <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-5 animate-fadeIn delay-500">
                     <div className="flex flex-wrap gap-6 items-center">
                       <a href="#" className="text-2xl hover:text-primary transition-colors" aria-label="Twitter">
                         <FaTwitter size={24} />
