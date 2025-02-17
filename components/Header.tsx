@@ -85,8 +85,9 @@ export const Header = () => {
             {[
               { href: '/', icon: FiHome, label: 'Home' },
               { href: '/about', icon: FiInfo, label: 'About' },
-              { href: '/products', icon: FiBriefcase, label: 'Products' },
-              { href: '/services', icon: FiUsers, label: 'Services' },
+              { href: '/vision', icon: FiBriefcase, label: 'Vision' },
+              { href: '/projects', icon: FiUsers, label: 'Projects' },
+              { href: '/career', icon: FiUsers, label: 'Careers' },
               { href: '/contact', icon: FiMail, label: 'Contact' },
             ].map(({ href, icon: Icon, label }, index) => (
               <div key={href} className="flex items-center">
@@ -108,45 +109,14 @@ export const Header = () => {
           {/* Right Section */}
           <div className="flex items-center space-x-3">
             {/* Login Link */}
-            <div className="hidden md:block rounded-lg p-1 items-center space-x-4 bg-footer">
-            {!user ? (
+            <div className="hidden md:block rounded-lg p-3 bg-chart-1 items-center space-x-4 text-white">
               <Link 
-                href="/login" 
+                href="/quotation-generator" 
                 className="flex items-center space-x-1 transition-colors group p-1.5 rounded-lg"
               >
                 <FiUser className="w-4 h-4" />
-                <span className="text-sm font-medium">Login</span>
+                <span className="text-sm font-medium">Generate Quotation</span>
               </Link>
-            ) : (
-              <div className="relative group">
-                <button className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-muted">
-                  <span className="text-sm font-medium">Hello, {user.name}</span>
-                  <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <div className="absolute right-0 mt-2 w-48 py-2 bg-background border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <Link 
-                    href="/profile" 
-                    className="flex items-center space-x-2 px-4 py-2 text-sm hover:bg-muted"
-                  >
-                    <FiUser className="w-4 h-4" />
-                    <span>Profile</span>
-                  </Link>
-                  <button 
-                    onClick={async () => {
-                      await fetch('/api/auth/user-login/logout', { method: 'POST' });
-                      setUser(null);
-                      window.location.reload();
-                    }}
-                    className="flex items-center space-x-2 px-4 py-2 text-sm text-red-500 hover:bg-muted w-full text-left"
-                  >
-                    <FiLogOut className="w-4 h-4" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              </div>            
-            )}
             </div>
             {/* Theme Switch */}
             <ThemeSwitch />

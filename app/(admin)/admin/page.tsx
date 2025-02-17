@@ -75,10 +75,10 @@ export default function AdminDashboard() {
 
   const adminFeatures: AdminFeatureCard[] = [
     {
-      title: "Product Management",
-      description: "Manage solar products, inventory, and pricing",
+      title: "Projects Management",
+      description: "Manage projects",
       icon: <Package />,
-      link: "/admin/products",
+      link: "/admin/projects",
       color: "bg-blue-500"
     },
     {
@@ -89,13 +89,6 @@ export default function AdminDashboard() {
       color: "bg-green-500"
     },
     {
-      title: "Order Management",
-      description: "Track and process customer orders",
-      icon: <ShoppingCart />,
-      link: "/admin/orders",
-      color: "bg-purple-500"
-    },
-    {
         title: "Employee Management",
         description: "Manage staff, installers, and permissions",
         icon: <UserCog />,
@@ -103,25 +96,11 @@ export default function AdminDashboard() {
         color: "bg-cyan-500"
       },
     {
-      title: "Installation Schedule",
-      description: "Manage installation appointments",
-      icon: <Calendar />,
-      link: "/admin/schedule",
-      color: "bg-orange-500"
-    },
-    {
       title: "Analytics",
       description: "View sales and performance metrics",
       icon: <BarChart3 />,
       link: "/admin/analytics",
       color: "bg-red-500"
-    },
-    {
-      title: "Inventory",
-      description: "Track and manage product inventory",
-      icon: <Boxes />,
-      link: "/admin/inventory",
-      color: "bg-indigo-500"
     },
     {
       title: "Reports",
@@ -150,14 +129,7 @@ export default function AdminDashboard() {
         icon: <FileSpreadsheet />,
         link: "/admin/quotes",
         color: "bg-violet-500"
-      },
-      {
-        title: "Marketing Tools",
-        description: "Manage campaigns and promotions",
-        icon: <Megaphone />,
-        link: "/admin/marketing",
-        color: "bg-rose-500"
-      }      
+      }  
   ]
 
   // Inside your component:
