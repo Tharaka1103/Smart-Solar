@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Calendar as CalendarIcon } from "lucide-react"
+import { Plus } from "lucide-react";
 import { format, getDaysInMonth, startOfMonth, addDays } from "date-fns"
 import {
   Dialog,
@@ -41,7 +41,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Calendar } from "@/components/ui/calendar"
 import { useToast } from "@/hooks/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
