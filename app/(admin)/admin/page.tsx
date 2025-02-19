@@ -5,13 +5,9 @@ import {
   Users,
   Package,
   BarChart3,
-  Settings,
-  Calendar,
   MessageSquare,
-  Bell,
   ShoppingCart,
   Sun,
-  Boxes,
   FileText,
   TrendingUp,
   AlertCircle,
@@ -19,7 +15,8 @@ import {
   PenTool, 
   FileSpreadsheet, 
   Megaphone,
-  LogOut
+  LogOut,
+  Coins
 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 
@@ -82,17 +79,17 @@ export default function AdminDashboard() {
       color: "bg-blue-500"
     },
     {
-      title: "Customer Management",
-      description: "View and manage customer information",
-      icon: <Users />,
-      link: "/admin/customers",
+      title: "Finance Management",
+      description: "View and manage financial information",
+      icon: <Coins />,
+      link: "/admin/finance",
       color: "bg-green-500"
     },
     {
         title: "Employee Management",
         description: "Manage staff, installers, and permissions",
         icon: <UserCog />,
-        link: "/admin/employees",
+        link: "/admin/employee",
         color: "bg-cyan-500"
       },
     {
