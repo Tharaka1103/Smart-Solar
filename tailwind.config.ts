@@ -4,9 +4,9 @@ import type { Config } from "tailwindcss";
 export default {
     darkMode: ["class", 'class'],
     content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+		'./pages/**/*.{js,ts,jsx,tsx,mdx}',
+		'./components/**/*.{js,ts,jsx,tsx,mdx}',
+		'./app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
   	extend: {
@@ -53,7 +53,10 @@ export default {
   				'3': 'var(--chart-3)',
   				'4': 'var(--chart-4)',
   				'5': 'var(--chart-5)'
-  			}
+  			},
+			alert:{
+				DEFAULT: 'var(--alert)'
+			}
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

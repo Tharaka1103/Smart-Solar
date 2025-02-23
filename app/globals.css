@@ -35,6 +35,7 @@ body {
     --chart-3: #2C3E50;
     --chart-4: #F1C40F;
     --chart-5: #E67E22;
+    --alert: #defcba;
   }
 
   .dark {
@@ -63,6 +64,7 @@ body {
     --chart-3: #DD6B20;
     --chart-4: #805AD5;
     --chart-5: #D53F8C;
+    --alert: #070c00;
   }
 }
 @layer base {

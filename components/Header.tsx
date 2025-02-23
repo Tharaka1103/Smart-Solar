@@ -55,8 +55,8 @@ export const Header = () => {
     <motion.header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-background/10 backdrop-blur-md shadow-sm h-12'
-          : 'bg-background/10 h-16'
+          ? 'bg-background backdrop-blur-md shadow-sm h-12'
+          : 'bg-transparent h-16'
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -81,7 +81,7 @@ export const Header = () => {
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex rounded-lg p-1 items-center space-x-4 bg-footer">
+          <nav className="hidden md:flex rounded-lg p-1 items-center space-x-4 ">
             {[
               { href: '/', icon: FiHome, label: 'Home' },
               { href: '/about', icon: FiInfo, label: 'About' },
@@ -109,7 +109,7 @@ export const Header = () => {
           {/* Right Section */}
           <div className="flex items-center space-x-3">
             {/* Login Link */}
-            <div className="hidden md:block rounded-lg p-3 bg-chart-1 items-center space-x-4 text-white">
+            <div className="hidden md:block rounded p-2 bg-chart-1 items-center space-x-4 text-white">
               <Link 
                 href="/quotation-generator" 
                 className="flex items-center space-x-1 transition-colors group p-1.5 rounded-lg"
