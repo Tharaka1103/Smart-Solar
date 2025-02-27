@@ -1,11 +1,12 @@
 'use client'
 import Image from "next/image";
-import { ArrowRight, Phone, Mail, MapPin, Link, Sun, Battery, House, Zap } from "lucide-react";
+import { ArrowRight, Phone, Mail, MapPin, Sun, Battery, House, Zap } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
 import { useRef } from "react"
 import { useTheme } from '@/providers/ThemeProvider'
+import Link from "next/link"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -290,19 +291,26 @@ export default function Home() {
         }}
         className="container mx-auto px-4"
       >
-        <h2 className="text-3xl font-bold text-center mb-8">Solar Education</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-6 bg-card rounded-xl">
-            <h3 className="text-xl font-semibold mb-4">Workshops</h3>
-            <p>Free educational sessions about solar technology and benefits.</p>
-          </div>
-          <div className="p-6 bg-card rounded-xl">
-            <h3 className="text-xl font-semibold mb-4">Resources</h3>
-            <p>Comprehensive guides and materials about solar energy.</p>
-          </div>
-          <div className="p-6 bg-card rounded-xl">
-            <h3 className="text-xl font-semibold mb-4">Consultation</h3>
-            <p>One-on-one sessions with our solar experts.</p>
+        <h2 className="text-3xl font-bold text-center mb-8">User Inquiries</h2>
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-lg mb-8 text-muted-foreground">Have questions about our solar solutions? We're here to help! Submit your inquiry or explore our comprehensive FAQ section.</p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="p-8 bg-card rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+              <h3 className="text-2xl font-semibold mb-4">Submit an Inquiry</h3>
+              <p className="mb-6 text-muted-foreground">Get personalized answers to your solar-related questions from our experts.</p>
+              <Link href="/inquiries" className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-card border border-primary text-primary font-medium hover:bg-primary hover:text-white transition-colors">
+                <span>Submit Inquiry</span>
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </Link>
+            </div>
+            <div className="p-8 bg-card rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+              <h3 className="text-2xl font-semibold mb-4">Learn More</h3>
+              <p className="mb-6 text-muted-foreground">Browse through our FAQ section and discover detailed information about our services.</p>
+              <Link href="/faq" className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-card border border-border font-medium hover:bg-secondary/90 transition-colors">
+                <span>View FAQ</span>
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+              </Link>
+            </div>
           </div>
         </div>
       </motion.div>

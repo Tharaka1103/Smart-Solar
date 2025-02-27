@@ -16,7 +16,8 @@ import {
   FileSpreadsheet, 
   Megaphone,
   LogOut,
-  Coins
+  Coins,
+  Bell
 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 
@@ -34,10 +35,17 @@ interface AdminFeatureCard {
   icon: React.ReactNode
   link: string
   color: string
+  details: {
+    stats: string
+    usage: string
+    lastUpdated: string
+    features: string[]
+  }
 }
 
 export default function AdminDashboard() {
   const [notifications] = useState(5)
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
 
   const dashboardStats: DashboardCard[] = [
     {
@@ -74,73 +82,117 @@ export default function AdminDashboard() {
     {
       title: "Projects Management",
       description: "Manage projects",
-      icon: <Package />,
+      icon: <Package className='animate-bounce' />,
       link: "/admin/projects",
-      color: "bg-blue-500"
+      color: "bg-blue-500",
+      details: {
+        stats: "156 Active Projects",
+        usage: "85% Completion Rate",
+        lastUpdated: "2 hours ago",
+        features: ["Project Timeline", "Resource Allocation", "Budget Tracking", "Team Management"]
+      }
     },
     {
       title: "Finance Management",
       description: "View and manage financial information",
-      icon: <Coins />,
+      icon: <Coins className='animate-bounce' />,
       link: "/admin/finance",
-      color: "bg-green-500"
+      color: "bg-green-500",
+      details: {
+        stats: "$2.4M Monthly Revenue",
+        usage: "92% Payment Success",
+        lastUpdated: "5 mins ago",
+        features: ["Invoice Generation", "Expense Tracking", "Financial Reports", "Budget Planning"]
+      }
     },
     {
-        title: "Employee Management",
-        description: "Manage staff, installers, and permissions",
-        icon: <UserCog />,
-        link: "/admin/employee",
-        color: "bg-cyan-500"
-      },
-    {
-      title: "Analytics",
-      description: "View sales and performance metrics",
-      icon: <BarChart3 />,
-      link: "/admin/analytics",
-      color: "bg-red-500"
+      title: "Employee Management",
+      description: "Manage employees salary and performance",
+      icon: <UserCog className='animate-bounce' />,
+      link: "/admin/employee",
+      color: "bg-cyan-500",
+      details: {
+        stats: "245 Active Employees",
+        usage: "78% Performance Rate",
+        lastUpdated: "1 hour ago",
+        features: ["Payroll Management", "Performance Reviews", "Leave Management", "Training Tracking"]
+      }
     },
     {
-      title: "Reports",
-      description: "Generate and view business reports",
-      icon: <FileText />,
+      title: "Customer Database",
+      description: "Store and manage customer information",
+      icon: <FileText className='animate-bounce' />,
       link: "/admin/reports",
-      color: "bg-yellow-500"
+      color: "bg-yellow-500",
+      details: {
+        stats: "5,678 Customers",
+        usage: "95% Data Accuracy",
+        lastUpdated: "30 mins ago",
+        features: ["Customer Profiles", "Interaction History", "Data Analytics", "Segmentation"]
+      }
+    },
+    {
+      title: "Notifications",
+      description: "View and manage notifications",
+      icon: <Bell className='animate-bounce'/>,
+      link: "/admin/analytics",
+      color: "bg-red-500",
+      details: {
+        stats: "126 New Alerts",
+        usage: "98% Delivery Rate",
+        lastUpdated: "1 min ago",
+        features: ["Alert Management", "Custom Triggers", "Notification History", "Priority Settings"]
+      }
+    },
+    {
+      title: "Maintenance Tracking",
+      description: "Monitor and schedule system maintenance",
+      icon: <PenTool className='animate-bounce' />,
+      link: "/admin/maintenance",
+      color: "bg-emerald-500",
+      details: {
+        stats: "45 Scheduled Tasks",
+        usage: "89% On-time Completion",
+        lastUpdated: "15 mins ago",
+        features: ["Schedule Planning", "Task Assignment", "Progress Tracking", "Maintenance Logs"]
+      }
+    },
+    {
+      title: "Quote Generator",
+      description: "Create and manage customer quotes",
+      icon: <FileSpreadsheet className='animate-bounce' />,
+      link: "/admin/quotes",
+      color: "bg-violet-500",
+      details: {
+        stats: "234 Quotes Generated",
+        usage: "76% Conversion Rate",
+        lastUpdated: "45 mins ago",
+        features: ["Quote Templates", "Price Calculator", "Proposal Builder", "Quote History"]
+      }
     },
     {
       title: "Support Tickets",
       description: "Manage customer support requests",
-      icon: <MessageSquare />,
+      icon: <MessageSquare className='animate-bounce' />,
       link: "/admin/support",
-      color: "bg-pink-500"
-    },
-      {
-        title: "Maintenance Tracking",
-        description: "Monitor and schedule system maintenance",
-        icon: <PenTool />,
-        link: "/admin/maintenance",
-        color: "bg-emerald-500"
-      },
-      {
-        title: "Quote Generator",
-        description: "Create and manage customer quotes",
-        icon: <FileSpreadsheet />,
-        link: "/admin/quotes",
-        color: "bg-violet-500"
-      }  
+      color: "bg-pink-500",
+      details: {
+        stats: "89 Open Tickets",
+        usage: "94% Resolution Rate",
+        lastUpdated: "10 mins ago",
+        features: ["Ticket Management", "Response Templates", "Priority Queue", "Performance Metrics"]
+      }
+    }
   ]
 
-  // Inside your component:
   const handleLogout = () => {
-    // Add your logout logic here
-    // Example: clear auth tokens, redirect to login page
+    alert('Logout clicked')
     window.location.href = '/login'
   }
   
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Navigation */}
       <div className="container mx-auto px-4 py-8">
-        {/* Dashboard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {dashboardStats.map((stat, index) => (
             <div key={index} className="bg-card p-6 rounded-xl border border-border">
@@ -158,24 +210,45 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Admin Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {adminFeatures.map((feature, index) => (
-            <Link 
-              href={feature.link} 
-              key={index}
-              className="group bg-card p-6 rounded-xl border border-border hover:border-primary transition-all duration-300"
-            >
-              <div className={`${feature.color} w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform`}>
-                {feature.icon}
-              </div>
-              <h3 className="font-semibold mb-2">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">{feature.description}</p>
-            </Link>
+            <div key={index} className="relative" onMouseEnter={() => setHoveredCard(index)} onMouseLeave={() => setHoveredCard(null)}>
+              <Link 
+                href={feature.link}
+                className="group bg-card p-6 rounded-xl h-full border border-border hover:border-primary transition-all duration-300 block"
+              >
+                <div className={`${feature.color} w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform`}>
+                  {feature.icon}
+                </div>
+                <h3 className="font-semibold mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
+              </Link>
+              {hoveredCard === index && (
+                <div className="absolute z-10 top-full left-0 right-0 mt-2 p-4 bg-card rounded-xl shadow-xl border border-border transform transition-all duration-300 ease-in-out opacity-100 scale-100 origin-top">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-primary">{feature.details.stats}</span>
+                      <span className="text-sm text-muted-foreground">Updated: {feature.details.lastUpdated}</span>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded-full">
+                      <div className={`h-full rounded-full ${feature.color}`} style={{width: feature.details.usage.split('%')[0] + '%'}}></div>
+                    </div>
+                    <p className="text-sm font-medium">{feature.details.usage}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {feature.details.features.map((feat, i) => (
+                        <div key={i} className="flex items-center gap-2 text-sm">
+                          <span className={`w-2 h-2 rounded-full ${feature.color}`}></span>
+                          {feat}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
-        {/* Recent Activity Section */}
         <div className="mt-8 bg-card rounded-xl border border-border p-6">
           <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
           <div className="space-y-4">
