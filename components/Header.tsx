@@ -1,55 +1,60 @@
 "use client"
 
-import { useState, useEffect, useCallback  } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ThemeSwitch } from './ThemeSwitch'
-import { motion, useScroll } from 'framer-motion'
-import { FiHome, FiInfo, FiBriefcase, FiMail, FiUsers, FiUser, FiLogOut } from 'react-icons/fi'
+import { motion, useScroll, AnimatePresence } from 'framer-motion'
+import { FiHome, FiInfo, FiBriefcase, FiMail, FiUsers, FiUser, FiLogOut, FiChevronDown, FiSettings, FiUserPlus } from 'react-icons/fi'
 import { usePathname } from 'next/navigation'
-
-interface User {
-  name: string;
-  email: string;
-}
+import { useAuth } from '@/lib/auth-context'
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const { scrollY } = useScroll()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const pathname = usePathname()
-  const [user, setUser] = useState<User | null>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null)
+  const { user, status, signOut } = useAuth()
+  
   useEffect(() => {
     const unsubscribe = scrollY.on('change', (latest) => {
       setIsScrolled(latest > 20)
     })
     return () => unsubscribe()
   }, [scrollY])
-  const checkAuthStatus = useCallback(async () => {
-    try {
-      const response = await fetch('/api/auth/user-login/check', {
-        credentials: 'include',
-        cache: 'no-store'
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
+  
+  // Close the user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false)
       }
-    } catch (error) {
-      console.error('Auth check failed:', error)
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
-
+  
+  // Close menus when changing routes
   useEffect(() => {
-    checkAuthStatus()
-    
-    // Add event listener for custom login event
-    window.addEventListener('user-logged-in', checkAuthStatus)
-    
-    return () => {
-      window.removeEventListener('user-logged-in', checkAuthStatus)
+    setIsMobileMenuOpen(false)
+    setIsUserMenuOpen(false)
+  }, [pathname])
+
+  const handleSignOut = async () => {
+    try {
+      console.log("Attempting to sign out...");
+      await signOut();
+      console.log("Sign out successful");
+      setIsUserMenuOpen(false);
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
-  }, [checkAuthStatus])
+  }
 
   return (
     <motion.header
@@ -108,16 +113,109 @@ export const Header = () => {
           </nav>          
           {/* Right Section */}
           <div className="flex items-center space-x-3">
-            {/* Login Link */}
-            <div className="hidden md:block rounded p-2 bg-chart-1 items-center space-x-4 text-white">
-              <Link 
-                href="/quotation-generator" 
-                className="flex items-center space-x-1 transition-colors group p-1.5 rounded-lg"
-              >
-                <FiUser className="w-4 h-4" />
-                <span className="text-sm font-medium">Generate Quotation</span>
-              </Link>
-            </div>
+            {/* Auth Buttons or User Menu */}
+            {status === "authenticated" && user ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-muted transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    {user.name ? user.name.charAt(0).toUpperCase() : <FiUser />}
+                  </div>
+                  <span className="font-medium text-sm hidden sm:inline-block">
+                    {user.name || user.email}
+                  </span>
+                  <FiChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-48 bg-background rounded-lg shadow-lg border border-border overflow-hidden z-50"
+                    >
+                      <div className="p-3 border-b border-border">
+                        <p className="font-medium text-sm">{user.name || "User"}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                      <div className="py-1">
+                        <Link
+                          href="/profile"
+                          className="flex items-center px-4 py-2 text-sm hover:bg-muted transition-colors"
+                        >
+                          <FiUser className="w-4 h-4 mr-2" />
+                          Profile
+                        </Link>
+                        {user.role === 'admin' && (
+                          <Link
+                            href="/admin"
+                            className="flex items-center px-4 py-2 text-sm hover:bg-muted transition-colors"
+                          >
+                            <FiSettings className="w-4 h-4 mr-2" />
+                            Admin Dashboard
+                          </Link>
+                        )}
+                        {user.role === 'manager' && (
+                          <Link
+                            href="/manager"
+                            className="flex items-center px-4 py-2 text-sm hover:bg-muted transition-colors"
+                          >
+                            <FiSettings className="w-4 h-4 mr-2" />
+                            Manager Dashboard
+                          </Link>
+                        )}
+                        {user.role === 'user' && (
+                          <Link
+                            href="/dashboard"
+                            className="flex items-center px-4 py-2 text-sm hover:bg-muted transition-colors"
+                          >
+                            <FiSettings className="w-4 h-4 mr-2" />
+                            Dashboard
+                          </Link>
+                        )}
+                        <button
+                          onClick={handleSignOut}
+                          className="flex items-center w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                        >
+                          <FiLogOut className="w-4 h-4 mr-2" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : status !== "loading" && (
+              <div className="hidden md:flex items-center space-x-2">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link 
+                    href="/signin" 
+                    className="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-300"
+                  >
+                    Sign In
+                  </Link>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link 
+                    href="/signup" 
+                    className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-full hover:bg-primary transition-all duration-300"
+                  >
+                    Sign Up
+                  </Link>
+                </motion.div>
+              </div>
+            )}
+            
             {/* Theme Switch */}
             <ThemeSwitch />
 
@@ -156,10 +254,10 @@ export const Header = () => {
           {[
             { href: '/', icon: FiHome, label: 'Home' },
             { href: '/about', icon: FiInfo, label: 'About' },
-            { href: '/products', icon: FiBriefcase, label: 'Products' },
-            { href: '/services', icon: FiUsers, label: 'Services' },
+            { href: '/vision', icon: FiBriefcase, label: 'Vision' },
+            { href: '/projects', icon: FiUsers, label: 'Projects' },
+            { href: '/career', icon: FiUsers, label: 'Careers' },
             { href: '/contact', icon: FiMail, label: 'Contact' },
-            { href: '/login', icon: FiUser, label: 'Login' },
           ].map(({ href, icon: Icon, label }) => (
             <Link 
               key={href}
@@ -175,6 +273,80 @@ export const Header = () => {
               <span className="font-medium">{label}</span>
             </Link>
           ))}
+          
+          {/* Mobile Auth Links */}
+          {status === "authenticated" && user ? (
+            <>
+              <div className="pt-2 pb-1 border-t border-border mt-2">
+                <p className="px-1.5 text-sm font-medium text-muted-foreground">Account</p>
+              </div>
+              <Link 
+                href="/profile" 
+                className="flex items-center space-x-2 p-1.5 rounded-lg transition-all text-text-foreground hover:bg-muted hover:text-primary"
+              >
+                <FiUser className="w-5 h-5" />
+                <span className="font-medium">Profile</span>
+              </Link>
+              
+              {user.role === 'admin' && (
+                <Link 
+                  href="/admin" 
+                  className="flex items-center space-x-2 p-1.5 rounded-lg transition-all text-text-foreground hover:bg-muted hover:text-primary"
+                >
+                  <FiSettings className="w-5 h-5" />
+                  <span className="font-medium">Admin Dashboard</span>
+                </Link>
+              )}
+              
+              {user.role === 'manager' && (
+                <Link 
+                  href="/manager" 
+                  className="flex items-center space-x-2 p-1.5 rounded-lg transition-all text-text-foreground hover:bg-muted hover:text-primary"
+                >
+                  <FiSettings className="w-5 h-5" />
+                  <span className="font-medium">Manager Dashboard</span>
+                </Link>
+              )}
+              
+              {user.role === 'user' && (
+                <Link 
+                  href="/dashboard" 
+                  className="flex items-center space-x-2 p-1.5 rounded-lg transition-all text-text-foreground hover:bg-muted hover:text-primary"
+                >
+                  <FiSettings className="w-5 h-5" />
+                  <span className="font-medium">Dashboard</span>
+                </Link>
+              )}
+              
+              <button 
+                onClick={handleSignOut}
+                className="flex items-center w-full space-x-2 p-1.5 rounded-lg transition-all text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20"
+              >
+                <FiLogOut className="w-5 h-5" />
+                <span className="font-medium">Sign Out</span>
+              </button>
+            </>
+          ) : status !== "loading" && (
+            <>
+              <div className="pt-2 pb-1 border-t border-border mt-2">
+                <p className="px-1.5 text-sm font-medium text-muted-foreground">Account</p>
+              </div>
+              <Link 
+                href="/signin" 
+                className="flex items-center space-x-2 p-1.5 rounded-lg transition-all text-text-foreground hover:bg-muted hover:text-primary"
+              >
+                <FiUser className="w-5 h-5" />
+                <span className="font-medium">Sign In</span>
+              </Link>
+              <Link 
+                href="/signup" 
+                className="flex items-center space-x-2 p-1.5 rounded-lg transition-all text-text-foreground hover:bg-muted hover:text-primary"
+              >
+                <FiUserPlus className="w-5 h-5" />
+                <span className="font-medium">Sign Up</span>
+              </Link>
+            </>
+          )}
         </div>
       </motion.div>
     </motion.header>

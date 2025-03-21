@@ -41,7 +41,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useToast } from "@/hooks/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -95,7 +94,6 @@ export default function EmployeesPage() {
   const [search, setSearch] = useState("")
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "yyyy-MM"))
   const [open, setOpen] = useState(false)
-  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -139,10 +137,7 @@ export default function EmployeesPage() {
     
     setEmployees([...employees, newEmployee])
     setOpen(false)
-    toast({
-      title: "Success",
-      description: "Employee attendance added successfully"
-    })
+
     form.reset()
   }
 

@@ -32,7 +32,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -84,7 +83,6 @@ export default function FinancePage() {
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [open, setOpen] = useState(false)
-  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -101,10 +99,6 @@ export default function FinancePage() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setFinances([...finances, { id: finances.length + 1, ...values }])
     setOpen(false)
-    toast({
-      title: "Success",
-      description: "Finance record added successfully",
-    })
     form.reset()
   }
 

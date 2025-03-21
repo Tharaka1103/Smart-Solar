@@ -122,7 +122,7 @@ export default function AdminDashboard() {
       title: "Customer Database",
       description: "Store and manage customer information",
       icon: <FileText className='animate-bounce' />,
-      link: "/admin/reports",
+      link: "/admin/customers",
       color: "bg-yellow-500",
       details: {
         stats: "5,678 Customers",
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
       title: "Notifications",
       description: "View and manage notifications",
       icon: <Bell className='animate-bounce'/>,
-      link: "/admin/analytics",
+      link: "/admin/notifications",
       color: "bg-red-500",
       details: {
         stats: "126 New Alerts",
