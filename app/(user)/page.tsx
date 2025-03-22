@@ -1,12 +1,13 @@
 'use client'
 import Image from "next/image";
-import { ArrowRight, Phone, Mail, MapPin, Sun, Battery, House, Zap } from "lucide-react";
+import { ArrowRight, Phone, Mail, MapPin, Sun, Battery, House, Zap, Sparkles } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
 import { useRef } from "react"
 import { useTheme } from '@/providers/ThemeProvider'
 import Link from "next/link"
+import router from "next/router";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -79,9 +80,49 @@ export default function Home() {
                 <button className="btn btn-primary border border-primary text-primary hover:bg-primary hover:text-white w-full sm:w-auto px-6 py-3 rounded-full flex items-center justify-center gap-2">
                   Get Started <ArrowRight className="w-5 h-5" />
                 </button>
-                <button className="btn btn-outline text-white w-full sm:w-auto px-6 py-3 rounded-full flex items-center justify-center gap-2">
-                  Learn More <Zap className="w-5 h-5" />
-                </button>
+                <Link href='/artificial-intelligence'>
+                  <motion.button
+                    className="relative btn overflow-hidden text-black w-full sm:w-auto px-6 py-3 rounded-full flex items-center justify-center gap-2 
+                      border border-primary bg-gradient-to-r from-green-600 to-yellow-400"
+                    whileHover={{ 
+                      scale: 1.05,
+                      boxShadow: "0 0 15px rgba(255, 255, 255, 0.5)" 
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.span 
+                      className="absolute inset-0 bg-gradient-to-r from-primary/60 to-primary"
+                      initial={{ x: "-100%" }}
+                      whileHover={{ x: 0 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                    />
+                    <motion.div 
+                      className="relative flex items-center font-bold justify-center gap-2"
+                      whileHover={{ 
+                        textShadow: "0 0 8px rgba(255, 255, 255, 0.8)" 
+                      }}
+                    >
+                      Try our Intelligence
+                      <motion.div
+                        animate={{ 
+                          y: [0, -3, 0],
+                          rotate: [0, -5, 0, 5, 0],
+                          opacity: [1, 0.8, 1] 
+                        }}
+                        transition={{ 
+                          duration: 1.5, 
+                          repeat: Infinity,
+                          repeatType: "reverse" 
+                        }}
+                      >
+                        <Sparkles className="w-5 h-5" />
+                      </motion.div>
+                    </motion.div>
+                  </motion.button>
+                </Link>
               </div>
             </motion.div>
           </div>

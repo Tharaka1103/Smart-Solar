@@ -1,0 +1,224 @@
+{
+  "questions": [
+    {
+      "keywords": ["what", "who", "company", "about", "smart solar"],
+      "answer": "We are a leading provider of solar energy solutions in Sri Lanka. We specialize in residential, commercial, and industrial solar installations, offering end-to-end services from consultation to maintenance. Established in 2010, we have completed over 5000 installations across the country and are certified by the Sustainable Energy Authority. Our team consists of qualified engineers and technicians with extensive experience in renewable energy systems."
+    },
+    {
+      "keywords": ["services", "offer", "provide", "solutions"],
+      "answer": "We offer a comprehensive range of solar services including solar panel installation, solar water heating systems, energy storage solutions, solar maintenance, and monitoring systems. Our team of experts will guide you through the entire process from initial consultation to post-installation support. We also provide energy auditing services, solar carports, and specialized industrial solar solutions. As an authorized dealer for leading global brands, we ensure you get the best quality products."
+    },
+    {
+      "keywords": ["warranty", "guarantee"],
+      "answer": "Our solar panels come with a 25-year performance warranty, and all installations are guaranteed for 10 years. Our inverters typically have a 5-10 year warranty, depending on the model. We also offer extended warranty options for complete peace of mind. All our warranties are backed by our dedicated service team and manufacturer partnerships."
+    },
+    {
+      "keywords": ["cost", "price", "expensive", "affordable"],
+      "answer": "The cost of a solar system depends on several factors including system size, type of panels, inverter specifications, and whether you need battery storage. Our residential systems typically start at Rs 500,000, while commercial systems are custom-quoted based on energy requirements. We offer financing options to make solar accessible to everyone. We also provide free energy assessments and detailed ROI calculations to help you make an informed decision."
+    },
+    {
+      "keywords": ["save", "savings", "return", "investment", "roi"],
+      "answer": "Most customers see a return on their solar investment within 5-7 years. Monthly electricity savings typically range from 50% to 90% depending on your system size and energy consumption patterns. With rising electricity costs, your savings will likely increase over time. Our customers have reported average annual savings of Rs 180,000 to Rs 360,000 on their electricity bills."
+    },
+    {
+      "keywords": ["battery", "storage", "night", "power cut", "backup"],
+      "answer": "Our battery storage solutions allow you to store excess solar energy for use during the night or during power outages. We offer lithium-ion battery systems that provide reliable backup power with long lifespans and minimal maintenance. Battery capacity can be customized based on your backup power needs. We partner with leading manufacturers like Tesla, LG, and Sonnen to provide the most advanced storage solutions."
+    },
+    {
+      "keywords": ["install", "installation", "process", "time", "how long"],
+      "answer": "The solar installation process typically takes 1-3 days for residential systems and 1-2 weeks for commercial systems, depending on complexity. Our process includes site assessment, custom design, permit handling, professional installation, and final inspection. We handle everything to make the transition to solar as smooth as possible. Our installation teams are certified and follow international safety standards."
+    },
+    {
+      "keywords": ["maintenance", "maintain", "clean", "service"],
+      "answer": "Solar systems require minimal maintenance. We recommend annual inspections and cleaning to ensure optimal performance. Our maintenance service includes panel cleaning, system performance check, and inverter diagnostics. We also offer monitoring solutions to track your system's performance in real-time. Our service team is available 24/7 for emergency support."
+    },
+    {
+      "keywords": ["financing", "loan", "payment", "pay"],
+      "answer": "We offer flexible financing options including zero-down payment plans, solar loans with competitive interest rates, and lease options. Our financing partners provide terms up to 10 years to make monthly payments comparable to or less than your current electricity bill. We also help you access government incentives and tax benefits for solar installations."
+    },
+    {
+      "keywords": ["grid", "net metering", "sell", "electricity"],
+      "answer": "Yes, we support grid-tied systems with net metering, allowing you to sell excess electricity back to the grid. This effectively turns your meter backward when you produce more than you consume, maximizing your investment return. We'll help you with all the necessary paperwork to set up net metering with your utility company. Our systems comply with all CEB (Ceylon Electricity Board) requirements."
+    },
+    {
+      "keywords": ["lifetime", "long", "last", "panels", "duration"],
+      "answer": "Quality solar panels typically last 25-30 years, with efficiency gradually decreasing to about 80% of their original output by the end of their life. Inverters generally last 10-15 years, while batteries (if installed) typically need replacement after 10-15 years depending on usage patterns and technology. We use Tier-1 panels from manufacturers with proven track records of longevity and reliability."
+    },
+    {
+      "keywords": ["monitoring", "app", "track", "production"],
+      "answer": "All our systems come with monitoring capabilities that allow you to track energy production and consumption in real-time through a smartphone app or web portal. This helps you optimize your energy usage and quickly identify any performance issues. Our smart monitoring systems include features like weather forecasting and automated maintenance alerts."
+    },
+    {
+      "keywords": ["contact", "reach", "call", "phone", "email"],
+      "answer": "You can contact our team at info@smartsolar.lk or call us at +94 11 234 5678. Our office hours are Monday to Friday, 9 AM to 5 PM, and Saturday from 9 AM to 1 PM. You can also visit our showroom at 123 Solar Lane, Colombo 5. We have regional offices in Kandy, Galle, and Jaffna to better serve you."
+    },
+    {
+      "keywords": ["hello", "hi", "hey", "greetings"],
+      "answer": "Hello! I'm Luminex, your solar assistant. How can I help you today with information about our solar products or services? I'm equipped with detailed knowledge about all our offerings and can provide specific recommendations based on your needs."
+    },
+    {
+      "keywords": ["thank", "thanks"],
+      "answer": "You're welcome! If you have any other questions about our solar solutions, feel free to ask. We're here to help you transition to clean, renewable energy. As Sri Lanka's most trusted solar provider, we're committed to your satisfaction and sustainable energy future."
+    },
+    {
+      "keywords": ["certification", "certified", "qualifications"],
+      "answer": "Our company holds all major industry certifications including ISO 9001:2015, SEA certification, and CEB approval. Our technicians are certified by international solar institutions and undergo regular training updates. We also maintain partnerships with globally certified equipment manufacturers."
+    },
+    {
+      "keywords": ["experience", "history", "track record"],
+      "answer": "With over 12 years in the solar industry, we've successfully completed more than 5000 installations across Sri Lanka. Our portfolio includes residential, commercial, and industrial projects, including some of the largest solar installations in the country."
+    },
+    {
+      "keywords": ["quality", "standards", "best"],
+      "answer": "We only use Tier-1 solar panels and premium inverters from globally recognized manufacturers. All our equipment meets international quality standards and undergoes rigorous testing. Our installation practices follow IEC standards and local building codes."
+    },
+    {
+      "keywords": ["commercial", "business", "industrial"],
+      "answer": "Our commercial solar solutions are tailored for businesses of all sizes. We offer custom system designs, power purchase agreements (PPAs), and comprehensive energy management solutions. Our industrial installations include rooftop systems, solar carports, and ground-mounted arrays."
+    },
+    {
+      "keywords": ["residential", "home", "house"],
+      "answer": "Our residential solar solutions are designed to maximize your home's energy independence. We offer customized systems based on your roof space, energy consumption, and budget. Our residential packages include options for backup power and smart home integration."
+    },
+    {
+      "keywords": ["inverter", "types", "brands"],
+      "answer": "We offer both string inverters and microinverters from leading brands like SMA, Fronius, and Enphase. Our team will help you choose the best inverter type based on your installation requirements and budget considerations."
+    },
+    {
+      "keywords": ["panel", "modules", "technology"],
+      "answer": "We offer various panel technologies including monocrystalline, polycrystalline, and bifacial modules. Our selection includes premium brands known for high efficiency and reliability. We can help you choose the best panel type for your specific needs."
+    },
+    {
+      "keywords": ["efficiency", "performance", "output"],
+      "answer": "Our solar panels typically operate at 18-22% efficiency, with some premium models reaching up to 24%. System performance is optimized through careful design, premium components, and advanced monitoring systems."
+    },
+    {
+      "keywords": ["roof", "installation type", "mount"],
+      "answer": "We offer various mounting solutions including roof-mounted, ground-mounted, and carport systems. Our engineers will assess your roof's structural integrity and recommend the best mounting solution for your situation."
+    },
+    {
+      "keywords": ["weather", "rain", "storm"],
+      "answer": "Our solar systems are designed to withstand Sri Lanka's weather conditions, including heavy rain and strong winds. The panels are tested for extreme weather resistance and come with appropriate safety certifications."
+    },
+    {
+      "keywords": ["insurance", "coverage", "protection"],
+      "answer": "All our installations are covered by comprehensive insurance during and after installation. This includes protection against damage, theft, and natural disasters. We also assist with insurance claims if needed."
+    },
+    {
+      "keywords": ["upgrade", "expand", "add"],
+      "answer": "Our systems are designed to be expandable. You can start with a basic setup and add more panels or battery storage later. We ensure future compatibility when designing your initial system."
+    },
+    {
+      "keywords": ["permits", "approvals", "legal"],
+      "answer": "We handle all necessary permits and approvals, including CEB documentation, local authority permits, and any required environmental clearances. Our team manages the entire paperwork process for you."
+    },
+    {
+      "keywords": ["training", "education", "learn"],
+      "answer": "We provide comprehensive training on system operation and basic maintenance. This includes hands-on demonstrations, user manuals, and access to our online learning resources."
+    },
+    {
+      "keywords": ["emergency", "support", "help"],
+      "answer": "Our 24/7 emergency support team is always available to address urgent issues. We have technicians on standby and typically respond to emergency calls within 2-4 hours."
+    },
+    {
+      "keywords": ["consultation", "assessment", "survey"],
+      "answer": "We offer free initial consultations and site assessments. Our experts will evaluate your energy needs, roof condition, and solar potential to provide a detailed proposal with system recommendations."
+    },
+    {
+      "keywords": ["shade", "shadow", "tree"],
+      "answer": "We conduct detailed shade analysis using advanced software to optimize panel placement. Our solutions include options for dealing with partial shade, such as microinverters or power optimizers."
+    },
+    {
+      "keywords": ["incentive", "rebate", "tax"],
+      "answer": "We help you access all available solar incentives, including government rebates, tax benefits, and special financing programs. Our team stays updated on the latest incentive programs."
+    },
+    {
+      "keywords": ["comparison", "competitor", "different"],
+      "answer": "What sets us apart is our comprehensive service, premium products, and proven track record. We offer transparent pricing, superior warranty coverage, and ongoing support that exceeds industry standards."
+    },
+    {
+      "keywords": ["smart home", "automation", "integration"],
+      "answer": "Our systems can integrate with smart home platforms for automated energy management. This includes smart thermostats, home automation systems, and energy monitoring devices."
+    },
+    {
+      "keywords": ["carbon", "environmental", "green"],
+      "answer": "A typical residential solar system from us reduces carbon emissions by 3-4 tons annually. We provide environmental impact reports showing your contribution to sustainability."
+    },
+    {
+      "keywords": ["maintenance contract", "service plan", "annual"],
+      "answer": "We offer various maintenance contracts including basic annual inspections to comprehensive coverage with priority support. These plans help ensure optimal system performance and longevity."
+    },
+    {
+      "keywords": ["energy audit", "consumption", "analysis"],
+      "answer": "Our energy audit service analyzes your consumption patterns and recommends optimal system sizing. We use advanced monitoring tools to provide detailed energy usage insights."
+    },
+    {
+      "keywords": ["off grid", "standalone", "independent"],
+      "answer": "We design and install off-grid solar systems for remote locations or complete energy independence. These systems include robust battery storage and backup power solutions."
+    },
+    {
+      "keywords": ["hybrid", "combined", "mixed"],
+      "answer": "Our hybrid solar systems combine grid connection with battery storage, offering the best of both worlds. These systems provide backup power while still allowing net metering benefits."
+    },
+    {
+      "keywords": ["warranty claim", "repair", "replace"],
+      "answer": "We handle all warranty claims directly, making the process seamless for you. Our team coordinates with manufacturers and handles all aspects of repairs or replacements under warranty."
+    },
+    {
+      "keywords": ["relocation", "move", "transfer"],
+      "answer": "We offer system relocation services if you move to a new property. This includes professional dismantling, transportation, and reinstallation at your new location."
+    },
+    {
+      "keywords": ["commercial financing", "business loans", "corporate"],
+      "answer": "We offer specialized financing options for businesses, including operating leases, capital leases, and power purchase agreements (PPAs). Our commercial financing solutions are designed to optimize tax benefits."
+    },
+    {
+      "keywords": ["temperature", "heat", "cooling"],
+      "answer": "Our panels are designed to perform efficiently in Sri Lanka's hot climate. We use temperature-resistant components and proper ventilation designs to maintain optimal performance."
+    },
+    {
+      "keywords": ["design", "layout", "plan"],
+      "answer": "Our design team uses advanced 3D modeling and simulation software to create optimal system layouts. We consider aesthetics, performance, and future expansion in our designs."
+    },
+    {
+      "keywords": ["timeline", "schedule", "project"],
+      "answer": "We provide detailed project timelines and keep you updated throughout the installation process. Most residential installations are completed within a week from permit approval."
+    },
+    {
+      "keywords": ["reference", "testimonial", "review"],
+      "answer": "We have numerous satisfied customers and can provide references in your area. Our projects include residential, commercial, and industrial installations across Sri Lanka."
+    },
+    {
+      "keywords": ["disposal", "recycling", "end of life"],
+      "answer": "We offer environmentally responsible disposal and recycling services for old solar equipment. We partner with certified recycling facilities to ensure proper handling of materials."
+    },
+    {
+      "keywords": ["voltage", "power", "electrical"],
+      "answer": "Our systems are designed to match your electrical requirements, whether single-phase or three-phase power. We ensure compatibility with your existing electrical infrastructure."
+    },
+    {
+      "keywords": ["documentation", "manual", "guide"],
+      "answer": "We provide comprehensive documentation including user manuals, warranty certificates, and maintenance guides. All documentation is available in English, Sinhala, and Tamil."
+    },
+    {
+      "keywords": ["research", "development", "innovation"],
+      "answer": "We continuously research and adopt new solar technologies. Our team stays updated with industry innovations to offer the most advanced and efficient solutions."
+    },
+    {
+      "keywords": ["safety", "security", "protection"],
+      "answer": "Safety is our top priority. We follow strict safety protocols during installation and include various safety features in our systems, including rapid shutdown capabilities and surge protection."
+    },
+    {
+      "keywords": ["customization", "special", "unique"],
+      "answer": "We offer customized solutions for unique requirements, including specialized mounting systems, custom power configurations, and architectural integration options."
+    },
+    {
+      "keywords": ["partnership", "dealer", "supplier"],
+      "answer": "We maintain strong partnerships with leading manufacturers and suppliers worldwide. This ensures access to the latest products and competitive pricing for our customers."
+    },
+    {
+        "keywords": ["need a solar system on my house", "house", "home", "residential"],
+        "answer": "We can help you install a solar system for your home. Our process includes a free site assessment, custom system design based on your energy needs, professional installation, and ongoing support. We'll handle all permits and documentation while ensuring you get the most efficient and cost-effective solution for your home."
+    }
+    ]
+}

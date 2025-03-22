@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   Users, 
@@ -12,9 +11,7 @@ import {
   FileText, 
   Mail, 
   Clock, 
-  Download, 
-  AlertCircle,
-  CheckCircle
+  Download,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { 
@@ -102,11 +99,7 @@ export default function EmployeePage() {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const { successt, errort, warningt, infot, dismissAll } = useToast()
-
-  const router = useRouter();
-  const { toast } = useToast();
-  
+  const { successt, errort, warningt, infot, dismissAll } = useToast()  
   // Employee form
   const employeeForm = useForm<z.infer<typeof employeeSchema>>({
     resolver: zodResolver(employeeSchema),
