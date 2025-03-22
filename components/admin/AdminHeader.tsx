@@ -4,11 +4,23 @@ import Link from 'next/link'
 import { Bell, Settings, LogOut, Menu, X, Search } from 'lucide-react'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { ThemeSwitch } from '../ThemeSwitch'
+import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export function AdminHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [notifications] = useState(5)
+  const router = useRouter()
 
+  const handleLogout = async () => {
+    try {
+      console.log("Attempting to sign out...");
+      await signOut();
+      console.log("Sign out successful");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  }
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 border-b border-border backdrop-blur-lg">
       <div className="container mx-auto px-4">
@@ -75,7 +87,7 @@ export function AdminHeader() {
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
                 <span className="text-primary font-semibold">AS</span>
               </div>
-              <button className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:opacity-90 transition-all hover:scale-105 flex items-center gap-2">
+              <button onClick={handleLogout} className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:opacity-90 transition-all hover:scale-105 flex items-center gap-2">
                 <LogOut className="w-4 h-4" />
                 <span>Logout</span>
               </button>
@@ -124,7 +136,7 @@ export function AdminHeader() {
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-primary font-semibold">AS</span>
                   </div>
-                  <button className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:opacity-90 transition-all hover:scale-105 flex items-center gap-2">
+                  <button onClick={handleLogout} className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:opacity-90 transition-all hover:scale-105 flex items-center gap-2">
                     <LogOut className="w-4 h-4" />
                     <span>Logout</span>
                   </button>
