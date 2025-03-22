@@ -216,7 +216,7 @@ export default function DashboardPage() {
   }
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background mt-10">
       {/* Dashboard Header */}
       <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b">
         <div className="container mx-auto py-8 px-4">

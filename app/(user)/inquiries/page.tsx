@@ -7,9 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/hooks/use-toast'
-
-// Mock customer data - replace with actual data source
+import { useToast } from '@/hooks/use-toast'
 const mockCustomerData = {
   '123': {
     name: 'John Doe',
@@ -30,6 +28,8 @@ export default function InquiriesPage() {
   const [inquiryType, setInquiryType] = useState<'our' | 'other' | null>(null)
   const [accountNumber, setAccountNumber] = useState('')
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails | null>(null)
+  const { successt, errort, warningt, infot, dismissAll } = useToast()
+
   const [formData, setFormData] = useState({
     name: '',
     contact: '',
@@ -44,26 +44,19 @@ export default function InquiriesPage() {
     if (details) {
       setCustomerDetails(details)
       setFormData(prev => ({ ...prev, name: details.name }))
-      toast({
-        title: "Customer Found",
-        description: "Customer details have been loaded successfully.",
+      successt({
+        title: 'Success!',
+        description: 'Your action was completed successfully.',
       })
     } else {
-      toast({
-        title: "Customer Not Found",
-        description: "Please check the account number and try again.",
-        variant: "destructive"
-      })
+
     }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Handle form submission
-    toast({
-      title: "Inquiry Submitted",
-      description: "We'll get back to you soon!",
-    })
+
     // Reset form
     setFormData({
       name: '',

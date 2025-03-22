@@ -88,6 +88,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast'
 
 const financeFormSchema = z.object({
   title: z.string().min(2, { message: "Title must be at least 2 characters." }),
@@ -131,7 +132,7 @@ export default function FinanceManagement() {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
+  const { successt, errort, warningt, infot, dismissAll } = useToast()
 
   const form = useForm<FinanceFormValues>({
     resolver: zodResolver(financeFormSchema),
@@ -155,9 +156,16 @@ export default function FinanceManagement() {
       if (!res.ok) throw new Error('Failed to fetch finances');
       const data = await res.json();
       setFinances(data);
+      successt({
+        title: "Finance data load successfully!",
+        description: "Your finance data have been loaded successfully.",
+      })
     } catch (error) {
       console.error('Error fetching finances:', error);
-
+      errort({
+        title: "Error!",
+        description: "There was an error loading your finance data. Please try again later.",
+      })
     } finally {
       setLoading(false);
     }
@@ -172,7 +180,10 @@ export default function FinanceManagement() {
       setSummary(data);
     } catch (error) {
       console.error('Error fetching summary:', error);
-
+      errort({
+        title: "Error!",
+        description: "There was an error loading your finance summary. Please try again later.",
+      })
     }
   };
 
@@ -188,8 +199,10 @@ export default function FinanceManagement() {
       });
 
       if (!res.ok) throw new Error('Failed to create finance record');
-
-
+      successt({
+        title: "Finance created successfully!",
+        description: "Your finance has been created successfully.",
+      })
       // Reset form and refresh data
       form.reset();
       setIsViewOpen(false);
@@ -197,7 +210,10 @@ export default function FinanceManagement() {
       fetchSummary();
     } catch (error) {
       console.error('Error creating finance:', error);
-
+      errort({
+        title: "Error!",
+        description: "There was an error creating your finance. Please try again later.",
+      })
     }
   };
 
@@ -215,15 +231,19 @@ export default function FinanceManagement() {
       });
 
       if (!res.ok) throw new Error('Failed to update finance record');
-
-
-
+      successt({
+        title: "Finance updated successfully!",
+        description: "Your finance has been updated successfully.",
+      })
       setIsEditOpen(false);
       fetchFinances();
       fetchSummary();
     } catch (error) {
       console.error('Error updating finance:', error);
- 
+      errort({
+        title: "Error!",
+        description: "There was an error updating your finance. Please try again later.",
+      })
     }
   };
 
@@ -237,15 +257,19 @@ export default function FinanceManagement() {
       });
 
       if (!res.ok) throw new Error('Failed to delete finance record');
-
-
-
+      successt({
+        title: "Finance deleted successfully!",
+        description: "Your finance has been deleted successfully.",
+      })
       setIsDeleteDialogOpen(false);
       fetchFinances();
       fetchSummary();
     } catch (error) {
       console.error('Error deleting finance:', error);
-
+      errort({
+        title: "Error!",
+        description: "There was an error deleting your finance. Please try again later.",
+      })
     }
   };
 

@@ -4,6 +4,8 @@ import "../globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AdminFooter } from "@/components/admin/AdminFooter";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+import { ToastProvider } from '@/contexts/toast-context'
+import { Toaster } from '@/components/ui/toaster'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,18 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider>
-          <main className="pt-16">
-            <AdminHeader />
-              {children}
-            <AdminFooter />
-          </main>
-        </ThemeProvider>
-      </body>
-    </html>
+          <ThemeProvider> 
+            <ToastProvider>
+              <main className="pt-16">
+                <AdminHeader />
+                {children}
+                <Toaster />
+                <AdminFooter />
+              </main>
+            </ToastProvider>
+          </ThemeProvider>
   );
 }

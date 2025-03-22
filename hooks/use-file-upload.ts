@@ -8,7 +8,7 @@ interface FileInfo {
 
 export function useFileUpload() {
   const [isUploading, setIsUploading] = useState(false)
-  const { toast } = useToast()
+  const { successt, errort, warningt, infot, dismissAll } = useToast()
 
   const uploadFile = async (
     file: File,
@@ -39,7 +39,7 @@ export function useFileUpload() {
 
       const result = await response.json()
       
-      toast({
+      successt({
         title: "Success",
         description: "File uploaded successfully",
       })
@@ -48,10 +48,9 @@ export function useFileUpload() {
     } catch (error) {
       console.error('Upload error:', error)
       
-      toast({
+      errort({
         title: "Error",
         description: "Failed to upload file. Please try again.",
-        variant: "destructive",
       })
       
       return null

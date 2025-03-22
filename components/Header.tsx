@@ -8,6 +8,7 @@ import { motion, useScroll, AnimatePresence } from 'framer-motion'
 import { FiHome, FiInfo, FiBriefcase, FiMail, FiUsers, FiUser, FiLogOut, FiChevronDown, FiSettings, FiUserPlus } from 'react-icons/fi'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
+import { useToast } from '@/hooks/use-toast'
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -17,6 +18,7 @@ export const Header = () => {
   const pathname = usePathname()
   const userMenuRef = useRef<HTMLDivElement>(null)
   const { user, status, signOut } = useAuth()
+  const { successt, errort, warningt, infot, dismissAll } = useToast()
   
   useEffect(() => {
     const unsubscribe = scrollY.on('change', (latest) => {
@@ -50,9 +52,17 @@ export const Header = () => {
       console.log("Attempting to sign out...");
       await signOut();
       console.log("Sign out successful");
+      successt({
+        title: "Sign out successful!",
+        description: "You have successfully signed out.",
+      })
       setIsUserMenuOpen(false);
     } catch (error) {
       console.error("Error signing out:", error);
+      errort({
+        title: "Sign out failed!",
+        description: "Please try again later.",
+      })
     }
   }
 

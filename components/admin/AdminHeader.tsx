@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Bell, Settings, LogOut, Menu, X, Search, AlertTriangle, Info, Check, TrendingDown } from 'lucide-react'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { ThemeSwitch } from '../ThemeSwitch'
-import { signOut } from 'next-auth/react'
+import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -24,11 +24,12 @@ export function AdminHeader() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { adminSignOut } = useAuth() // Use the auth context
 
   const handleLogout = async () => {
     try {
       console.log("Attempting to sign out...");
-      await signOut();
+      await adminSignOut();
       console.log("Sign out successful");
     } catch (error) {
       console.error("Error signing out:", error);

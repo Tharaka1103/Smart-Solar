@@ -7,6 +7,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AuthProvider } from "@/lib/auth-context";
+import { ToastProvider } from '@/contexts/toast-context'
+import { Toaster } from '@/components/ui/toaster'
 
 
 // Create a component to check session validity
@@ -40,13 +42,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <AuthProvider>
-
+      <body>
+        <div>
+          <AuthProvider>
             <ThemeProvider>
+              <ToastProvider>
                 {children}
+                <Toaster />
+              </ToastProvider>
             </ThemeProvider>
-            </AuthProvider>
+          </AuthProvider>
+        </div>
       </body>
     </html>
   );

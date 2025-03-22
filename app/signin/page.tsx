@@ -9,6 +9,7 @@ import * as z from "zod"
 import { motion } from "framer-motion"
 import { Mail, Lock, AlertCircle, LogIn } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
+import { useToast } from '@/hooks/use-toast'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -36,7 +37,8 @@ export default function SignInPage() {
   const searchParams = useSearchParams()
   const [error, setError] = useState("")
   const { user, status, signIn, error: authError } = useAuth()
-  
+  const { successt, errort, warningt, infot, dismissAll } = useToast()
+
   // Get the callback URL but don't show it if it's just /dashboard
   const callbackUrl = searchParams.get("callbackUrl")
   const shouldShowCallback = callbackUrl && callbackUrl !== "/dashboard"
@@ -109,7 +111,10 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
     const user = await signIn(values.email, values.password)
     
     console.log("Sign-in successful, checking for redirection")
-    
+    successt({
+      title: "Sign-in successful!",
+      description: "You have successfully signed in.",
+    })
     // Add a fallback redirection mechanism
     const redirectTimer = setTimeout(() => {
       console.log("Fallback redirection triggered")
@@ -129,6 +134,10 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
   } catch (error: any) {
     console.error("Sign in error:", error)
     setError(error.message || "Failed to sign in. Please check your credentials.")
+    errort({
+      title: "Sign-in failed!",
+      description: "Please check your credentials and try again.",
+    })
   } finally {
     setIsLoading(false)
   }

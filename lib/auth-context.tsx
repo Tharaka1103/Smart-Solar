@@ -16,6 +16,7 @@ interface AuthContextType {
   status: 'loading' | 'authenticated' | 'unauthenticated'
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
+  adminSignOut: () => Promise<void> 
   error: string | null
 }
 
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   status: 'loading',
   signIn: async () => {},
   signOut: async () => {},
+  adminSignOut: async () => {}, 
   error: null,
 })
 
@@ -71,7 +73,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   // Sign in function
-  // In your signIn function within auth-context.tsx
 const signIn = async (email: string, password: string) => {
     try {
       setError(null)
@@ -155,9 +156,38 @@ const signIn = async (email: string, password: string) => {
       console.error('Sign out error:', error)
     }
   }
+  const adminSignOut = async () => {
+    try {
+      const response = await fetch('/api/auth/admin-logout', {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to sign out');
+      }
+      
+      // Clear all auth data
+      Cookies.remove('auth-token');
+      localStorage.removeItem('user');
+      setUser(null);
+      setStatus('unauthenticated');
+      
+      // Force navigation to login page
+      window.location.href = '/signin';
+    } catch (error: any) {
+      console.error('Admin sign out error:', error);
+      // Even if there's an error, we should try to clear the local auth state
+      Cookies.remove('auth-token');
+      localStorage.removeItem('user');
+      setUser(null);
+      setStatus('unauthenticated');
+      window.location.href = '/signin';
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, status, signIn, signOut, error }}>
+    <AuthContext.Provider value={{ user, status, signIn, signOut, error, adminSignOut }}>
       {children}
     </AuthContext.Provider>
   )

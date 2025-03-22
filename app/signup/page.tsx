@@ -9,6 +9,7 @@ import * as z from "zod"
 import { motion } from "framer-motion"
 import { Mail, Lock, User, Phone, MapPin, AlertCircle, UserPlus } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
+import { useToast } from '@/hooks/use-toast'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -50,7 +51,8 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const { status } = useAuth()
-  
+  const { successt, errort, warningt, infot, dismissAll } = useToast()
+
   // Redirect if already authenticated
   useEffect(() => {
     if (status === "authenticated") {
@@ -98,11 +100,19 @@ export default function SignUpPage() {
         throw new Error(data.message || "Failed to register")
       }
       
+      successt({
+        title: "Sign-up successful!",
+        description: "You have successfully registered. You can now sign in.",
+      })
       // Redirect to sign in page with success message
       router.push("/signin?registered=true")
     } catch (error: any) {
       console.error("Registration error:", error)
       setError(error.message || "Failed to register. Please try again.")
+      errort({
+        title: "Sign-up failed!",
+        description: "Please check your information and try again.",
+      })
     } finally {
       setIsLoading(false)
     }
