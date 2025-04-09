@@ -106,17 +106,14 @@ function SignInContent() {
     setError("")
     
     try {
-      console.log("Attempting to sign in with:", values.email)
       const user = await signIn(values.email, values.password)
       
-      console.log("Sign-in successful, checking for redirection")
       successt({
         title: "Sign-in successful!",
         description: "You have successfully signed in.",
       })
       // Add a fallback redirection mechanism
       const redirectTimer = setTimeout(() => {
-        console.log("Fallback redirection triggered")
         const storedUser = JSON.parse(localStorage.getItem('user') || '{}')
         const role = storedUser?.role || 'user'
         
@@ -131,7 +128,6 @@ function SignInContent() {
       
       return () => clearTimeout(redirectTimer)
     } catch (error: any) {
-      console.error("Sign in error:", error)
       setError(error.message || "Failed to sign in. Please check your credentials.")
       errort({
         title: "Sign-in failed!",
