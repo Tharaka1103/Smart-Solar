@@ -21,28 +21,52 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/hooks/use-toast"
 import { 
   User, Home, Settings, FileText, MessageSquare, HelpCircle, 
   Bell, ChevronRight, Edit3, Trash2, Save, X, Phone, Mail, 
-  MapPin, ShieldCheck, Calendar, Check, RefreshCw, Lock
+  MapPin, ShieldCheck, Calendar, Check, RefreshCw, Lock,
+  Clock, CheckCircle, XCircle, Send, Loader2, AlertCircle,
+  ChevronLeft, ChevronDown, ChevronUp, Filter, Search
 } from 'lucide-react'
 
 // Interface for inquiries
+interface InquiryResponse {
+  message: string
+  respondedBy: string
+  respondedAt: string
+}
+
 interface Inquiry {
-  id: string
-  date: string
-  type: string
-  status: 'pending' | 'responded' | 'closed'
+  _id: string
+  customerType: 'existing' | 'new'
+  customerId?: string
+  customerDetails: {
+    name: string
+    email: string
+    contact: string
+    address?: string
+    district?: string
+  }
   subject: string
   message: string
-  response?: {
-    date: string
-    message: string
-    from: string
-  }
+  type: string
+  status: 'pending' | 'responded' | 'closed'
+  responses: InquiryResponse[]
+  createdAt: string
+  updatedAt: string
 }
 
 // Interface for quote requests
@@ -58,6 +82,7 @@ interface QuoteRequest {
 
 export default function DashboardPage() {
   const { user, status, signOut } = useAuth()
+  const { successt, errort, warningt, infot, dismissAll } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [profileData, setProfileData] = useState({
@@ -67,7 +92,18 @@ export default function DashboardPage() {
     district: '',
     address: '',
   })
+  
+  // Inquiries state
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
+  const [isLoadingInquiries, setIsLoadingInquiries] = useState(false)
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null)
+  const [isInquiryDialogOpen, setIsInquiryDialogOpen] = useState(false)
+  const [newReplyText, setNewReplyText] = useState('')
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false)
+  const [inquiryFilter, setInquiryFilter] = useState<'all' | 'pending' | 'responded' | 'closed'>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  
+  // Quote requests
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([])
   
   // Initialize profile data from user
@@ -81,52 +117,40 @@ export default function DashboardPage() {
         address: localStorage.getItem('userAddress') || '',
       })
       
-      // In a real app, these would be fetched from an API
-      fetchMockData()
+      // Fetch user's inquiries and quote requests
+      fetchUserInquiries()
+      fetchMockQuoteRequests() // This would be replaced with actual API call
     }
   }, [user])
   
-  // Mock data fetching function
-  const fetchMockData = () => {
-    // Mock inquiries data
-    setInquiries([
-      {
-        id: 'inq-001',
-        date: '2023-11-15',
-        type: 'Technical Support',
-        status: 'responded',
-        subject: 'Solar panel performance issues',
-        message: 'I noticed that my solar panels are not generating as much power as expected. Could someone check this?',
-        response: {
-          date: '2023-11-16',
-          message: 'Thank you for reaching out. The decreased performance might be due to weather conditions or dust accumulation. We recommend cleaning the panels and monitoring performance for the next few days. If the issue persists, our technician can visit.',
-          from: 'Technical Support Team'
-        }
-      },
-      {
-        id: 'inq-002',
-        date: '2023-12-01',
-        type: 'Billing Inquiry',
-        status: 'pending',
-        subject: 'Question about my latest invoice',
-        message: 'I have a question about the charges on my latest maintenance invoice. Could you please explain the breakdown?'
-      },
-      {
-        id: 'inq-003',
-        date: '2023-12-10',
-        type: 'General Inquiry',
-        status: 'closed',
-        subject: 'System upgrade options',
-        message: 'I am interested in upgrading my current solar system. What options do I have?',
-        response: {
-          date: '2023-12-11',
-          message: 'We offer several upgrade options based on your current system. Our consultant will contact you within 48 hours to discuss the possibilities that best suit your needs and budget.',
-          from: 'Sales Team'
-        }
-      }
-    ])
+  // Fetch user inquiries from API
+  const fetchUserInquiries = async () => {
+    if (!user?.email) return
     
-    // Mock quote requests
+    setIsLoadingInquiries(true)
+    try {
+      const response = await fetch(`/api/inquiries/user?email=${user.email}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch inquiries')
+      }
+      
+      const data = await response.json()
+      setInquiries(data)
+    } catch (error) {
+      console.error('Error fetching inquiries:', error)
+      errort({
+        title: "Error",
+        description: "Failed to load your inquiries. Please try again.",
+      })
+    } finally {
+      setIsLoadingInquiries(false)
+    }
+  }
+  
+  // Mock data fetching function for quote requests
+  const fetchMockQuoteRequests = () => {
+    // Mock quote requests data
     setQuoteRequests([
       {
         id: 'quote-001',
@@ -149,6 +173,61 @@ export default function DashboardPage() {
     ])
   }
   
+  // Submit a new reply to an inquiry
+  const handleSubmitReply = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!selectedInquiry || !newReplyText.trim()) {
+      errort({
+        title: "Error",
+        description: "Please enter a reply message",
+      })
+      return
+    }
+    
+    setIsSubmittingReply(true)
+    
+    try {
+      const response = await fetch(`/api/inquiries/${selectedInquiry._id}/user-reply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: newReplyText })
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit reply')
+      }
+      
+      const updatedInquiry = await response.json()
+      
+      // Update inquiries list
+      setInquiries(prev => 
+        prev.map(inq => inq._id === updatedInquiry._id ? updatedInquiry : inq)
+      )
+      
+      // Update selected inquiry
+      setSelectedInquiry(updatedInquiry)
+      
+      // Clear reply text
+      setNewReplyText('')
+      
+      successt({
+        title: "Reply Sent",
+        description: "Your reply has been sent successfully",
+      })
+    } catch (error) {
+      console.error('Error submitting reply:', error)
+      errort({
+        title: "Error",
+        description: "Failed to send your reply. Please try again.",
+      })
+    } finally {
+      setIsSubmittingReply(false)
+    }
+  }
+  
   // Handle form submission for profile update
   const handleProfileUpdate = async () => {
     setIsLoading(true)
@@ -163,10 +242,16 @@ export default function DashboardPage() {
       localStorage.setItem('userAddress', profileData.address)
       
       setIsEditing(false)
-      // Show success message
+      successt({
+        title: "Profile Updated",
+        description: "Your profile information has been updated successfully.",
+      })
     } catch (error) {
       console.error("Error updating profile:", error)
-      // Show error message
+      errort({
+        title: "Update Failed",
+        description: "There was an error updating your profile. Please try again.",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -182,8 +267,72 @@ export default function DashboardPage() {
       signOut()
     } catch (error) {
       console.error("Error deleting account:", error)
+      errort({
+        title: "Action Failed",
+        description: "There was an error deleting your account. Please try again.",
+      })
     } finally {
       setIsLoading(false)
+    }
+  }
+  
+  // Filter inquiries based on status and search query
+  const getFilteredInquiries = () => {
+    return inquiries.filter(inquiry => {
+      // Apply status filter
+      if (inquiryFilter !== 'all' && inquiry.status !== inquiryFilter) {
+        return false
+      }
+      
+      // Apply search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase()
+        return (
+          inquiry.subject.toLowerCase().includes(query) ||
+          inquiry.message.toLowerCase().includes(query) ||
+          inquiry.type.toLowerCase().includes(query)
+        )
+      }
+      
+      return true
+    })
+  }
+  
+  // View inquiry details
+  const handleViewInquiry = (inquiry: Inquiry) => {
+    setSelectedInquiry(inquiry)
+    setIsInquiryDialogOpen(true)
+  }
+  
+  // Format date
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString()
+  }
+  
+  // Get status badge
+  const getStatusBadge = (status: 'pending' | 'responded' | 'closed') => {
+    switch (status) {
+      case 'pending':
+        return (
+          <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        )
+      case 'responded':
+        return (
+          <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20">
+            <CheckCircle className="h-3 w-3 mr-1" />
+            Responded
+          </Badge>
+        )
+      case 'closed':
+        return (
+          <Badge variant="outline" className="bg-gray-500/10 text-gray-600 border-gray-500/20">
+            <XCircle className="h-3 w-3 mr-1" />
+            Closed
+          </Badge>
+        )
     }
   }
   
@@ -214,6 +363,8 @@ export default function DashboardPage() {
       </div>
     )
   }
+  
+  const filteredInquiries = getFilteredInquiries()
   
   return (
     <div className="min-h-screen bg-background mt-10">
@@ -345,36 +496,50 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {/* Activity Item */}
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-full bg-primary/10 p-2">
-                      <MessageSquare size={18} className="text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <p className="font-medium">New inquiry response received</p>
-                        <Badge variant="outline" className="w-fit">1 day ago</Badge>
+                  {/* Activity Items - Generated dynamically based on actual activities */}
+                  {inquiries.length > 0 && (
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-full bg-primary/10 p-2">
+                        <MessageSquare size={18} className="text-primary" />
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Technical support team responded to your inquiry about solar panel performance.
-                      </p>
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                          <p className="font-medium">
+                            {inquiries[0].responses.length > 0 
+                              ? "New inquiry response received" 
+                              : "New inquiry submitted"}
+                          </p>
+                          <Badge variant="outline" className="w-fit">
+                            {new Date(inquiries[0].updatedAt).toLocaleDateString()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {inquiries[0].responses.length > 0 
+                            ? `Response received for your inquiry about ${inquiries[0].subject.toLowerCase()}.`
+                            : `You submitted a new inquiry about ${inquiries[0].subject.toLowerCase()}.`}
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-full bg-primary/10 p-2">
-                      <FileText size={18} className="text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <p className="font-medium">Quote request submitted</p>
-                        <Badge variant="outline" className="w-fit">3 days ago</Badge>
+                  {quoteRequests.length > 0 && (
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-full bg-primary/10 p-2">
+                        <FileText size={18} className="text-primary" />
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        You requested a quote for an 8.2kW solar system installation.
-                      </p>
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                          <p className="font-medium">Quote request submitted</p>
+                          <Badge variant="outline" className="w-fit">
+                            {new Date(quoteRequests[0].date).toLocaleDateString()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          You requested a quote for a {quoteRequests[0].systemSize}kW solar system installation.
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
                   <div className="flex items-start gap-4">
                     <div className="rounded-full bg-primary/10 p-2">
@@ -383,7 +548,7 @@ export default function DashboardPage() {
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <p className="font-medium">Profile updated</p>
-                        <Badge variant="outline" className="w-fit">5 days ago</Badge>
+                        <Badge variant="outline" className="w-fit">Recent</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">
                         You updated your account profile information.
@@ -402,6 +567,7 @@ export default function DashboardPage() {
           
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
+            {/* Profile tab content remains the same as in the original code */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* User Profile Card */}
               <Card className="lg:col-span-1">
@@ -484,7 +650,7 @@ export default function DashboardPage() {
                 </CardFooter>
               </Card>
               
-              {/* Edit Profile Form */}
+              {/* Profile Edit Form and Account Info Card */}
               <AnimatePresence>
                 {isEditing ? (
                   <motion.div
@@ -662,142 +828,235 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
           
-          {/* Inquiries Tab */}
+          {/* Inquiries Tab - Updated with real API integration */}
           <TabsContent value="inquiries" className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-bold">Your Inquiries</h2>
                 <p className="text-muted-foreground">View and track all your inquiries with Smart Solar</p>
               </div>
-              <Button className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                New Inquiry
-              </Button>
+              <div className="flex gap-2 w-full md:w-auto">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2"
+                  onClick={fetchUserInquiries}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Refresh
+                </Button>
+                <Button className="flex items-center gap-2" asChild>
+                  <a href="/inquiries">
+                    <MessageSquare className="h-4 w-4" />
+                    New Inquiry
+                  </a>
+                </Button>
+              </div>
             </div>
             
+            {/* Inquiry Filters */}
             <Card>
-              <CardContent className="p-0">
-                <div className="rounded-md border">
-                  <div className="relative w-full overflow-auto">
-                    <table className="w-full caption-bottom text-sm">
-                      <thead>
-                        <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                          <th className="h-12 px-4 text-left align-middle font-medium">ID</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium">Date</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium">Subject</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium">Type</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium">Status</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {inquiries.map((inquiry) => (
-                          <tr 
-                            key={inquiry.id} 
-                            className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                          >
-                            <td className="p-4 align-middle">{inquiry.id}</td>
-                            <td className="p-4 align-middle">{new Date(inquiry.date).toLocaleDateString()}</td>
-                            <td className="p-4 align-middle">{inquiry.subject}</td>
-                            <td className="p-4 align-middle">
-                              <Badge variant="outline" className="font-normal">
-                                {inquiry.type}
-                              </Badge>
-                            </td>
-                            <td className="p-4 align-middle">
-                              {inquiry.status === 'pending' && (
-                                <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
-                                  Pending
-                                </Badge>
-                              )}
-                              {inquiry.status === 'responded' && (
-                                <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20">
-                                  Responded
-                                </Badge>
-                              )}
-                              {inquiry.status === 'closed' && (
-                                <Badge variant="outline" className="bg-gray-500/10 text-gray-600 border-gray-500/20">
-                                  Closed
-                                </Badge>
-                              )}
-                            </td>
-                            <td className="p-4 align-middle">
-                              <Button variant="outline" size="sm">View Details</Button>
-                            </td>
-                          </tr>
-                        ))}
-                        {inquiries.length === 0 && (
-                          <tr>
-                            <td colSpan={6} className="h-24 text-center text-muted-foreground">
-                              No inquiries found. Create a new inquiry to get started.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="inquirySearch" className="mb-2 block">Search Inquiries</Label>
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        id="inquirySearch" 
+                        placeholder="Search by subject or content..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="statusFilter" className="mb-2 block">Filter by Status</Label>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant={inquiryFilter === 'all' ? 'default' : 'outline'} 
+                        size="sm"
+                        onClick={() => setInquiryFilter('all')}
+                        className="flex items-center gap-1"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        All
+                      </Button>
+                      <Button 
+                        variant={inquiryFilter === 'pending' ? 'default' : 'outline'} 
+                        size="sm"
+                        onClick={() => setInquiryFilter('pending')}
+                        className="flex items-center gap-1"
+                      >
+                        <Clock className="h-3.5 w-3.5" />
+                        Pending
+                      </Button>
+                      <Button 
+                        variant={inquiryFilter === 'responded' ? 'default' : 'outline'} 
+                        size="sm"
+                        onClick={() => setInquiryFilter('responded')}
+                        className="flex items-center gap-1"
+                      >
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        Responded
+                      </Button>
+                      <Button 
+                        variant={inquiryFilter === 'closed' ? 'default' : 'outline'} 
+                        size="sm"
+                        onClick={() => setInquiryFilter('closed')}
+                        className="flex items-center gap-1"
+                      >
+                        <XCircle className="h-3.5 w-3.5" />
+                        Closed
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            {/* Inquiry Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {inquiries.slice(0, 1).map((inquiry) => (
-                <Card key={inquiry.id} className="md:col-span-2">
-                  <CardHeader>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div>
-                        <CardTitle>{inquiry.subject}</CardTitle>
-                        <CardDescription>
-                          {inquiry.id} • {new Date(inquiry.date).toLocaleDateString()} • {inquiry.type}
-                        </CardDescription>
+            {/* Inquiries List */}
+            {isLoadingInquiries ? (
+              <Card>
+                <CardContent className="flex items-center justify-center p-8">
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm text-muted-foreground">Loading your inquiries...</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : filteredInquiries.length > 0 ? (
+              <div className="space-y-4">
+                {filteredInquiries.map((inquiry) => (
+                  <Card key={inquiry._id} className="overflow-hidden">
+                    <div 
+                      className={`h-1.5 ${
+                        inquiry.status === 'pending' 
+                          ? 'bg-yellow-500' 
+                          : inquiry.status === 'responded'
+                          ? 'bg-green-500' 
+                          : 'bg-gray-500'
+                      }`} 
+                    />
+                    <CardHeader className="pb-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <CardTitle className="text-lg">{inquiry.subject}</CardTitle>
+                        {getStatusBadge(inquiry.status)}
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className={
-                          inquiry.status === 'pending' 
-                            ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" 
-                            : inquiry.status === 'responded'
-                            ? "bg-green-500/10 text-green-600 border-green-500/20"
-                            : "bg-gray-500/10 text-gray-600 border-gray-500/20"
-                        }
-                      >
-                        {inquiry.status.charAt(0).toUpperCase() + inquiry.status.slice(1)}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="rounded-lg border bg-card p-4">
-                      <h4 className="text-sm font-medium mb-2">Your Message</h4>
-                      <p className="text-sm text-muted-foreground">{inquiry.message}</p>
-                    </div>
-                    
-                    {inquiry.response && (
-                      <div className="rounded-lg border bg-primary/5 p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium">Response from {inquiry.response.from}</h4>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(inquiry.response.date).toLocaleDateString()}
-                          </span>
+                      <CardDescription>
+                        <div className="flex items-center gap-2">
+                          <span>{new Date(inquiry.createdAt).toLocaleDateString()}</span>
+                          <span>•</span>
+                          <Badge variant="outline">{inquiry.type}</Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">{inquiry.response.message}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button variant="outline">Mark as Closed</Button>
-                    <Button>Reply</Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pb-3">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {inquiry.message}
+                      </p>
+                      {inquiry.responses.length > 0 && (
+                        <div className="mt-3 pt-3 border-t">
+                          <p className="text-sm font-medium flex items-center gap-1">
+                            <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                            Latest Response:
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            {inquiry.responses[inquiry.responses.length - 1].message}
+                          </p>
+                        </div>
+                      )}
+                    </CardContent>
+                    <CardFooter className="pt-0">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="ml-auto"
+                        onClick={() => handleViewInquiry(inquiry)}
+                      >
+                        View Details
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+                  <div className="rounded-full bg-muted p-3 mb-4">
+                    <MessageSquare className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">No inquiries found</h3>
+                  <p className="text-muted-foreground max-w-md mb-6">
+                    {searchQuery || inquiryFilter !== 'all'
+                      ? "No inquiries match your current filters. Try adjusting your search criteria."
+                      : "You haven't submitted any inquiries yet. Create a new inquiry to get started."}
+                  </p>
+                  {(searchQuery || inquiryFilter !== 'all') ? (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setSearchQuery('');
+                        setInquiryFilter('all');
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  ) : (
+                    <Button asChild>
+                      <a href="/inquiries">Create an Inquiry</a>
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Create New Inquiry Section */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Need Help?</CardTitle>
+                <CardDescription>Submit a new inquiry to get assistance from our team</CardDescription>
+              </CardHeader>
+              <CardContent className="pb-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Whether you need technical support, have questions about your solar system, or want to provide feedback,
+                  our support team is ready to assist you.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1 p-4 border rounded-lg">
+                    <h4 className="text-base font-medium mb-2 flex items-center gap-2">
+                      <HelpCircle className="h-4 w-4 text-primary" />
+                      Technical Support
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      Get help with system performance, maintenance, or troubleshooting issues.
+                    </p>
+                  </div>
+                  <div className="flex-1 p-4 border rounded-lg">
+                    <h4 className="text-base font-medium mb-2 flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-primary" />
+                      General Inquiries
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      Questions about billing, services, or other general information.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full sm:w-auto" asChild>
+                  <a href="/inquiries">Create New Inquiry</a>
+                </Button>
+              </CardFooter>
+            </Card>
           </TabsContent>
           
           {/* Quotes Tab */}
           <TabsContent value="quotes" className="space-y-6">
+            {/* Keep the existing quotes tab content */}
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Your Quote Requests</h2>
+              <h2 className="text-2xl font-bold">Your Quote Requests</h2>
                 <p className="text-muted-foreground">Track all your solar system quote requests</p>
               </div>
               <Button className="flex items-center gap-2">
@@ -958,6 +1217,260 @@ export default function DashboardPage() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Inquiry Detail Dialog */}
+      <Dialog open={isInquiryDialogOpen} onOpenChange={setIsInquiryDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedInquiry && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center justify-between mb-1">
+                  <DialogTitle className="text-xl">{selectedInquiry.subject}</DialogTitle>
+                  {getStatusBadge(selectedInquiry.status)}
+                </div>
+                <DialogDescription>
+                  Inquiry ID: {selectedInquiry._id} • Created: {formatDate(selectedInquiry.createdAt)}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+                <div className="md:col-span-1 space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Inquiry Information</h3>
+                    <Card>
+                      <CardContent className="p-4 space-y-3">
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Type</p>
+                            <Badge variant="outline" className="mt-1">
+                              {selectedInquiry.type}
+                            </Badge>
+                          </div>
+                          
+                          <div>
+                            <p className="text-xs text-muted-foreground">Status</p>
+                            <div className="mt-1">
+                              {getStatusBadge(selectedInquiry.status)}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <p className="text-xs text-muted-foreground">Date Submitted</p>
+                            <p className="text-sm font-medium">{formatDate(selectedInquiry.createdAt)}</p>
+                          </div>
+                          
+                          <div>
+                            <p className="text-xs text-muted-foreground">Last Updated</p>
+                            <p className="text-sm font-medium">{formatDate(selectedInquiry.updatedAt)}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Your Contact Details</h3>
+                    <Card>
+                      <CardContent className="p-4 space-y-3">
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Name</p>
+                            <p className="text-sm font-medium">{selectedInquiry.customerDetails.name}</p>
+                          </div>
+                          
+                          <div>
+                            <p className="text-xs text-muted-foreground">Email</p>
+                            <p className="text-sm font-medium">{selectedInquiry.customerDetails.email}</p>
+                          </div>
+                          
+                          <div>
+                            <p className="text-xs text-muted-foreground">Contact</p>
+                            <p className="text-sm font-medium">{selectedInquiry.customerDetails.contact}</p>
+                          </div>
+                          
+                          {selectedInquiry.customerDetails.address && (
+                            <div>
+                              <p className="text-xs text-muted-foreground">Address</p>
+                              <p className="text-sm font-medium">{selectedInquiry.customerDetails.address}</p>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+                
+                <div className="md:col-span-2 space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Your Original Message</h3>
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="p-3 bg-muted/30 rounded-md text-sm whitespace-pre-wrap">
+                          {selectedInquiry.message}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Responses ({selectedInquiry.responses.length})
+                    </h3>
+                    
+                    {selectedInquiry.responses.length === 0 ? (
+                      <Card>
+                        <CardContent className="p-6 text-center">
+                          <div className="mb-4 flex justify-center">
+                            <div className="rounded-full bg-yellow-500/10 p-3">
+                              <Clock className="h-5 w-5 text-yellow-600" />
+                            </div>
+                          </div>
+                          <h4 className="text-sm font-medium mb-2">Awaiting Response</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Our team is reviewing your inquiry and will respond soon.
+                            Typical response time is 1-2 business days.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <div className="space-y-3">
+                        {selectedInquiry.responses.map((response, index) => (
+                          <Card key={index} className="overflow-hidden">
+                            <div className="h-1 bg-primary/20" />
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="rounded-full bg-primary/10 p-1.5">
+                                    <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                                  </div>
+                                  <span className="text-sm font-medium">
+                                    Response from {response.respondedBy}
+                                  </span>
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  {formatDate(response.respondedAt)}
+                                </span>
+                              </div>
+                              <div className="whitespace-pre-wrap text-sm">
+                                {response.message}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {selectedInquiry.status !== 'closed' && (
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Send a Reply</h3>
+                      <Card>
+                        <CardContent className="p-4">
+                          <form onSubmit={handleSubmitReply} className="space-y-4">
+                            <div>
+                              <Label htmlFor="replyMessage">Your Message</Label>
+                              <Textarea 
+                                id="replyMessage" 
+                                rows={4}
+                                value={newReplyText}
+                                onChange={(e) => setNewReplyText(e.target.value)}
+                                placeholder="Type your reply here..."
+                                className="mt-1"
+                                required
+                              />
+                            </div>
+                            <div className="flex justify-end">
+                              <Button 
+                                type="submit" 
+                                disabled={isSubmittingReply}
+                                className="flex items-center gap-2"
+                              >
+                                {isSubmittingReply ? (
+                                  <>
+                                    <RefreshCw className="h-4 w-4 animate-spin" />
+                                    Sending...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Send className="h-4 w-4" />
+                                    Send Reply
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </form>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <DialogFooter>
+                <div className="flex gap-2 w-full justify-between">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsInquiryDialogOpen(false)}
+                    className="flex items-center gap-2"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Back to List
+                  </Button>
+                  
+                  {selectedInquiry.status !== 'closed' && (
+                    <Button 
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(`/api/inquiries/${selectedInquiry._id}/status`, {
+                            method: 'PATCH',
+                            headers: {
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ status: 'closed' })
+                          });
+                          
+                          if (!response.ok) {
+                            throw new Error('Failed to close inquiry');
+                          }
+                          
+                          const updatedInquiry = await response.json();
+                          
+                          // Update inquiries list
+                          setInquiries(prev => 
+                            prev.map(inq => inq._id === updatedInquiry._id ? updatedInquiry : inq)
+                          );
+                          
+                          // Update selected inquiry
+                          setSelectedInquiry(updatedInquiry);
+                          
+                          successt({
+                            title: "Inquiry Closed",
+                            description: "The inquiry has been marked as closed",
+                          });
+                        } catch (error) {
+                          console.error('Error closing inquiry:', error);
+                          errort({
+                            title: "Error",
+                            description: "Failed to close the inquiry. Please try again.",
+                          });
+                        }
+                      }}
+                    >
+                      <XCircle className="h-4 w-4" />
+                      Close Inquiry
+                    </Button>
+                  )}
+                </div>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
+
+
+

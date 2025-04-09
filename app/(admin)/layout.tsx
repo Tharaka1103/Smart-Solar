@@ -6,6 +6,7 @@ import { AdminFooter } from "@/components/admin/AdminFooter";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ToastProvider } from '@/contexts/toast-context'
 import { Toaster } from '@/components/ui/toaster'
+import { QuickAccessMenu } from "@/components/admin/QuickAccessMenu";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
               <main className="pt-16">
                 <AdminHeader />
                 {children}
+                <QuickAccessMenu />
                 <Toaster />
                 <AdminFooter />
               </main>

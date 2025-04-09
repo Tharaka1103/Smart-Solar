@@ -30,6 +30,7 @@
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
+import { ScrollArea } from '@radix-ui/react-scroll-area'
 
   export default function MaintenancePage() {
     const [date, setDate] = useState<Date>()
@@ -48,110 +49,112 @@
           <h1 className="text-3xl font-bold">Maintenance Records</h1>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 transition-all duration-200 flex items-center gap-2">
+              <Button className="bg-primary transition-all duration-200 flex items-center gap-2">
                 <PlusCircle className="h-5 w-5" />
                 Schedule Maintenance
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[650px] p-6">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-blue-600">Schedule New Maintenance</DialogTitle>
+                <DialogTitle className="text-2xl font-bold  mb-4">Schedule New Maintenance</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-6 py-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="client">Client Name</Label>
-                    <Input id="client" placeholder="Enter client name" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="system">System ID</Label>
-                    <Input id="system" placeholder="Enter system ID" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Maintenance Date & Time</Label>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      className="rounded-md border bg-white"
-                    />
-                    <div className="space-y-2">
-                      <Label htmlFor="time">Preferred Time</Label>
-                      <Input type="time" id="time" />
-                    
-                      <Label htmlFor="duration">Duration (hours)</Label>
-                      <Input type="number" id="duration" min="1" max="8" placeholder="2" />
+              <div className="overflow-y-auto max-h-[70vh] pr-4 custom-scrollbar">
+                <div className="grid gap-6 py-4">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                      <Label htmlFor="client" className="">Client Name</Label>
+                      <Input id="client" placeholder="Enter client name" className="focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                      <Label htmlFor="system" className="">System ID</Label>
+                      <Input id="system" placeholder="Enter system ID" className="focus:ring-2 focus:ring-blue-500" />
                     </div>
                   </div>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="type">Maintenance Type</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="routine">Routine Check</SelectItem>
-                        <SelectItem value="repair">Repair</SelectItem>
-                        <SelectItem value="cleaning">Panel Cleaning</SelectItem>
-                        <SelectItem value="inspection">Annual Inspection</SelectItem>
-                        <SelectItem value="emergency">Emergency Service</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                    <Label className="">Maintenance Date & Time</Label>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        className="rounded-md border shadow-sm"
+                      />
+                      <div className="space-y-2">
+                        <Label htmlFor="time" className="">Preferred Time</Label>
+                        <Input type="time" id="time" className="focus:ring-2 focus:ring-blue-500" />
+                      
+                        <Label htmlFor="duration" className="">Duration (hours)</Label>
+                        <Input type="number" id="duration" min="1" max="8" placeholder="2" className="focus:ring-2 focus:ring-blue-500" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="priority">Priority Level</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="urgent">Urgent</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="contact">Contact Number</Label>
-                    <Input id="contact" type="tel" placeholder="Enter contact number" />
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                      <Label htmlFor="type" className="">Maintenance Type</Label>
+                      <Select>
+                        <SelectTrigger className="focus:ring-2 focus:ring-blue-500">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="routine">Routine Check</SelectItem>
+                          <SelectItem value="repair">Repair</SelectItem>
+                          <SelectItem value="cleaning">Panel Cleaning</SelectItem>
+                          <SelectItem value="inspection">Annual Inspection</SelectItem>
+                          <SelectItem value="emergency">Emergency Service</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                      <Label htmlFor="priority" className="">Priority Level</Label>
+                      <Select>
+                        <SelectTrigger className="focus:ring-2 focus:ring-blue-500">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Low</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="high">High</SelectItem>
+                          <SelectItem value="urgent">Urgent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" placeholder="Enter email address" />
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                      <Label htmlFor="contact" className="">Contact Number</Label>
+                      <Input id="contact" type="tel" placeholder="Enter contact number" className="focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                      <Label htmlFor="email" className="">Email Address</Label>
+                      <Input id="email" type="email" placeholder="Enter email address" className="focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                    <Label htmlFor="description" className="">Description of Work</Label>
+                    <Textarea 
+                      id="description" 
+                      placeholder="Please provide detailed description of maintenance work required..."
+                      className="min-h-[100px] focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2 transition-all hover:shadow-md p-3 rounded-lg">
+                    <Label htmlFor="notes" className="">Additional Notes</Label>
+                    <Textarea 
+                      id="notes" 
+                      placeholder="Any special instructions or access requirements..."
+                      className="min-h-[80px] focus:ring-2 focus:ring-blue-500"
+                    />
                   </div>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description of Work</Label>
-                  <Textarea 
-                    id="description" 
-                    placeholder="Please provide detailed description of maintenance work required..."
-                    className="min-h-[100px]"
-                  />
+                <div className="flex justify-end space-x-3 pt-4 border-t mt-4">
+                  <Button variant="outline" className="w-[100px] hover:bg-gray-100">Cancel</Button>
+                  <Button className="bg-primary w-[100px] transition-colors duration-200">Schedule</Button>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Additional Notes</Label>
-                  <Textarea 
-                    id="notes" 
-                    placeholder="Any special instructions or access requirements..."
-                    className="min-h-[80px]"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end space-x-3 pt-4 border-t">
-                <Button variant="outline" className="w-[100px]">Cancel</Button>
-                <Button className="bg-blue-600 hover:bg-blue-700 w-[100px]">Schedule</Button>
               </div>
             </DialogContent>
           </Dialog>

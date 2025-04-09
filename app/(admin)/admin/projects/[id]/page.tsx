@@ -107,7 +107,7 @@ export default function ProjectDetails() {
     
     try {
       const response = await fetch(`/api/projects/${id}/progress`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },

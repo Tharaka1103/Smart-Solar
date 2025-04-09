@@ -1,61 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { connectToDatabase } from '@/lib/db'
-import mongoose from 'mongoose'
+import type { NextApiRequest, NextApiResponse } from 'next';
+import {connectToDatabase} from '@/lib/db';
+import User from '@/models/User';
+import OtpVerification from '@/models/OtpVerification';
+import bcrypt from 'bcryptjs';
 
-let PasswordReset: any
-try {
-  PasswordReset = mongoose.model('PasswordReset')
-} catch {
-  const PasswordResetSchema = new mongoose.Schema({
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User'
-    },
-    token: {
-      type: String,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      expires: 3600, // Token expires after 1 hour
-    },
-  })
-  
-  PasswordReset = mongoose.model('PasswordReset', PasswordResetSchema)
-}
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
-export async function POST(req: NextRequest) {
   try {
-    const { token } = await req.json()
-
-    if (!token) {
-      return NextResponse.json(
-        { message: 'Token is required' },
-        { status: 400 }
-      )
-    }
-
-    // Connect to the database
-    await connectToDatabase()
-
-    // Find the reset token
-    const resetToken = await PasswordReset.findOne({ token })
+    await connectToDatabase();
     
-    if (!resetToken) {
-      return NextResponse.json(
-        { message: 'Invalid or expired token' },
-        { status: 400 }
-      )
+    const { email, otp, password } = req.body;
+    
+    if (!email || !otp || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
-
-    return NextResponse.json({ valid: true })
-  } catch (error: any) {
-    console.error('Token validation error:', error)
-    return NextResponse.json(
-      { message: 'Error validating token', error: error.message },
-      { status: 500 }
-    )
+    
+    // Verify OTP one more time
+    const otpRecord = await OtpVerification.findOne({ 
+      email, 
+      otp,
+      expiresAt: { $gt: new Date() }
+    });
+    
+    if (!otpRecord) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+    
+    // Find user and update password
+    const user = await User.findOne({ email });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    // Update user's password
+    user.password = hashedPassword;
+    await user.save();
+    
+    // Delete the OTP record as it's been used
+    await OtpVerification.deleteMany({ email });
+    
+    return res.status(200).json({ 
+      message: 'Password reset successful' 
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }

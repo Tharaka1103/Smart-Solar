@@ -73,9 +73,8 @@ const employeeSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
   role: z.string({ required_error: "Please select a role" }),
-  contact: z.string().min(10, { message: "Contact number must be valid" }),
-  address: z.string().min(5, { message: "Address is required" }),
-  hourlyRate: z.coerce.number().min(1, { message: "Hourly rate must be at least 1" })
+  contact: z.string().regex(/^[+-\d]+$/, { message: "Contact number can only contain numbers and + or - symbols" }).min(10, { message: "Contact number must be at least 10 digits" }).max(10, { message: "Contact number must not exceed 10 digits" }),
+  address: z.string().min(5, { message: "Address is required" }),  hourlyRate: z.coerce.number().min(1, { message: "Hourly rate must be at least 1" })
 });
 
 // Attendance form schema
@@ -612,7 +611,7 @@ export default function EmployeePage() {
                               Edit
                             </Button>
                             <Button 
-                              variant="outline" 
+                              variant="destructive" 
                               size="sm"
                               onClick={() => {
                                 setSelectedEmployee(employee);
