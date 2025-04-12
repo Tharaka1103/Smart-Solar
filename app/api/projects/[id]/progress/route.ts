@@ -3,17 +3,15 @@ import { connectToDatabase } from '@/lib/db';
 import Project from '@/models/Project';
 
 // Update a project
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest) {
   try {
     await connectToDatabase();
     
     const { status } = await req.json();
+    const id = req.nextUrl.pathname.split('/').pop();
     
     const updatedProject = await Project.findByIdAndUpdate(
-      params.id,
+      id,
       { status },
       { new: true, runValidators: true }
     );

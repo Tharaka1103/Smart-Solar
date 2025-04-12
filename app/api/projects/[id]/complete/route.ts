@@ -4,14 +4,12 @@ import Project from '@/models/Project';
 import Maintenance from '@/models/Maintenance';
 import Notification from '@/models/Notification';
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
     
-    const projectId = params.id;
+    // Get project ID from URL path
+    const projectId = req.url.split('/').pop();
     
     // Find the project
     const project = await Project.findById(projectId);

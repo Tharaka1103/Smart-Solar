@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const id = url.pathname.split('/').pop()
     const { message } = await req.json()
     
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { message: 'Invalid inquiry ID' },
         { status: 400 }
