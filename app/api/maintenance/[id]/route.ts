@@ -2,14 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import Maintenance from '@/models/Maintenance';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
     
-    const maintenanceId = params.id;
+    const maintenanceId = req.nextUrl.pathname.split('/').pop();
     const maintenance = await Maintenance.findById(maintenanceId);
     
     if (!maintenance) {
@@ -29,14 +26,11 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest) {
   try {
     await connectToDatabase();
     
-    const maintenanceId = params.id;
+    const maintenanceId = req.nextUrl.pathname.split('/').pop();
     const updateData = await req.json();
     
     const maintenance = await Maintenance.findByIdAndUpdate(
@@ -62,14 +56,11 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest) {
   try {
     await connectToDatabase();
     
-    const maintenanceId = params.id;
+    const maintenanceId = req.nextUrl.pathname.split('/').pop();
     
     const maintenance = await Maintenance.findByIdAndDelete(maintenanceId);
     

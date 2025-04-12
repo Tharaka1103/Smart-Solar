@@ -4,11 +4,12 @@ import Employee from '@/models/Employee';
 import { verifyJwt } from '@/lib/edge-jwt';
 
 // Get a single employee
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest) {
   try {
+    const id = req.url.split('/').pop();
     await connectToDatabase();
     
-    const employee = await Employee.findById(params.id);
+    const employee = await Employee.findById(id);
     
     if (!employee) {
       return NextResponse.json(
@@ -28,8 +29,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // Update an employee
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest) {
   try {
+    const id = req.url.split('/').pop();
     const token = req.cookies.get('auth-token')?.value;
     if (!token) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -43,7 +45,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const data = await req.json();
     
     const employee = await Employee.findByIdAndUpdate(
-      params.id,
+      id,
       data,
       { new: true, runValidators: true }
     );
@@ -66,8 +68,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // Delete an employee
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest) {
   try {
+    const id = req.url.split('/').pop();
     const token = req.cookies.get('auth-token')?.value;
     if (!token) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -78,7 +81,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     
     await connectToDatabase();
     
-    const employee = await Employee.findByIdAndDelete(params.id);
+    const employee = await Employee.findByIdAndDelete(id);
     
     if (!employee) {
       return NextResponse.json(

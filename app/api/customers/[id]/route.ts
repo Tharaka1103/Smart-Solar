@@ -8,13 +8,18 @@ function isValidObjectId(id: string) {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
+// Extract customer ID from URL
+function getCustomerIdFromUrl(request: NextRequest): string {
+  // Get the URL path segments
+  const pathSegments = request.nextUrl.pathname.split('/');
+  // The ID will be the last segment in the path /api/customers/[id]
+  return pathSegments[pathSegments.length - 1];
+}
+
 // GET a specific customer
-export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const id = context.params.id;
+    const id = getCustomerIdFromUrl(request);
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
@@ -47,12 +52,9 @@ export async function GET(
 }
 
 // PUT update a specific customer
-export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
-    const id = context.params.id;
+    const id = getCustomerIdFromUrl(request);
     const body = await request.json();
 
     if (!isValidObjectId(id)) {
@@ -105,12 +107,9 @@ export async function PUT(
 }
 
 // DELETE a specific customer
-export async function DELETE(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
-    const id = context.params.id;
+    const id = getCustomerIdFromUrl(request);
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
