@@ -4,11 +4,12 @@ import Employee from '@/models/Employee';
 import { verifyJwt } from '@/lib/edge-jwt';
 
 // Get attendance for an employee
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
     
-    const { searchParams } = new URL(req.url);
+    const { searchParams, pathname } = new URL(req.url);
+    const employeeId = pathname.split('/')[3]; // Get ID from URL path
     const yearParam = searchParams.get('year');
     const monthParam = searchParams.get('month');
     const customPeriod = searchParams.get('customPeriod') === 'true';
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const year = yearParam ? parseInt(yearParam) : new Date().getFullYear();
     const month = monthParam ? parseInt(monthParam) : new Date().getMonth();
     
-    const employee = await Employee.findById(params.id);
+    const employee = await Employee.findById(employeeId);
     
     if (!employee) {
       return NextResponse.json(
@@ -123,8 +124,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     );
   }
 }
+
 // Update attendance for an employee
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest) {
   try {
     const token = req.cookies.get('auth-token')?.value;
     if (!token) {
@@ -136,6 +138,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     
     await connectToDatabase();
     
+    const { pathname } = new URL(req.url);
+    const employeeId = pathname.split('/')[3]; // Get ID from URL path
+    
     const data = await req.json();
     const { year, month, entries, customPeriod, manualSalary } = data;
     
@@ -146,7 +151,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       );
     }
     
-    const employee = await Employee.findById(params.id);
+    const employee = await Employee.findById(employeeId);
     
     if (!employee) {
       return NextResponse.json(
