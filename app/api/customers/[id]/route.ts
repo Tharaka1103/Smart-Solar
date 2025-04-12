@@ -10,11 +10,11 @@ function isValidObjectId(id: string) {
 
 // GET a specific customer
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
+    const id = context.params.id;
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
@@ -48,12 +48,12 @@ export async function GET(
 
 // PUT update a specific customer
 export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
-    const body = await req.json();
+    const id = context.params.id;
+    const body = await request.json();
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
@@ -106,11 +106,11 @@ export async function PUT(
 
 // DELETE a specific customer
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
+    const id = context.params.id;
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
