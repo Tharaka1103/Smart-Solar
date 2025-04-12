@@ -3,6 +3,7 @@
 import { useTheme } from '@/providers/ThemeProvider'
 import { motion } from 'framer-motion'
 import { FiSun, FiMoon } from 'react-icons/fi'
+import { MoonStar, Sun } from 'lucide-react'
 
 export const ThemeSwitch = () => {
   const { theme, toggleTheme } = useTheme()
@@ -20,9 +21,8 @@ export const ThemeSwitch = () => {
           rotate: theme === 'dark' ? 360 : 0,
         }}
         transition={{ duration: 0.5, type: "spring" }}
-        className="text-card-foreground text-xl"
       >
-        {theme === 'dark' ? <FiMoon /> : <FiSun />}
+        {theme === 'dark' ? <MoonStar className="w-5 h-5" /> : <Sun className="w-5 h-5" />} 
       </motion.div>
     </motion.button>
   )

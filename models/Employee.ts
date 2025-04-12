@@ -12,6 +12,7 @@ export interface AttendanceMonth {
   entries: AttendanceEntry[];
   totalHours: number;
   totalSalary: number;
+  manualSalaryAdjustment?: boolean;
 }
 
 export interface EmployeeDocument extends Document {
@@ -23,6 +24,11 @@ export interface EmployeeDocument extends Document {
   hourlyRate: number;
   joiningDate: Date;
   attendance: AttendanceMonth[];
+  bankDetails?: {
+    accountNumber?: string;
+    bankName?: string;
+    branch?: string;
+  };
 }
 
 const AttendanceEntrySchema = new Schema({
@@ -36,7 +42,8 @@ const AttendanceMonthSchema = new Schema({
   month: { type: Number, required: true },
   entries: [AttendanceEntrySchema],
   totalHours: { type: Number, default: 0 },
-  totalSalary: { type: Number, default: 0 }
+  totalSalary: { type: Number, default: 0 },
+  manualSalaryAdjustment: { type: Boolean, default: false }
 });
 
 const EmployeeSchema = new Schema<EmployeeDocument>(
@@ -48,7 +55,12 @@ const EmployeeSchema = new Schema<EmployeeDocument>(
     address: { type: String, required: true },
     hourlyRate: { type: Number, required: true, default: 0 },
     joiningDate: { type: Date, default: Date.now },
-    attendance: [AttendanceMonthSchema]
+    attendance: [AttendanceMonthSchema],
+    bankDetails: {
+      accountNumber: { type: String },
+      bankName: { type: String },
+      branch: { type: String }
+    }
   },
   { timestamps: true }
 );

@@ -1,24 +1,20 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import {connectToDatabase} from '@/lib/db';
 import User from '@/models/User';
 import OtpVerification from '@/models/OtpVerification';
 import bcrypt from 'bcryptjs';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
+export async function POST(request: NextRequest) {
   try {
     await connectToDatabase();
     
-    const { email, otp, password } = req.body;
+    const { email, otp, password } = await request.json();
     
     if (!email || !otp || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return NextResponse.json(
+        { message: 'All fields are required' },
+        { status: 400 }
+      );
     }
     
     // Verify OTP one more time
@@ -29,14 +25,20 @@ export default async function handler(
     });
     
     if (!otpRecord) {
-      return res.status(400).json({ message: 'Invalid or expired OTP' });
+      return NextResponse.json(
+        { message: 'Invalid or expired OTP' },
+        { status: 400 }
+      );
     }
     
     // Find user and update password
     const user = await User.findOne({ email });
     
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      );
     }
     
     // Hash the new password
@@ -50,11 +52,15 @@ export default async function handler(
     // Delete the OTP record as it's been used
     await OtpVerification.deleteMany({ email });
     
-    return res.status(200).json({ 
-      message: 'Password reset successful' 
-    });
+    return NextResponse.json(
+      { message: 'Password reset successful' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Password reset error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

@@ -12,8 +12,13 @@ import {
   Mail, 
   Clock, 
   Download,
+  Calendar,
+  DollarSign,
+  PiggyBank,
+  Check,
+  X
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO, isToday, isYesterday } from 'date-fns';
 import { 
   Card, 
   CardContent, 
@@ -51,11 +56,15 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast'
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Skeleton } from '@/components/ui/skeleton';
+
+import SalaryReportComponent from '@/components/admin/SalaryReportComponent';
 
 // Define employee roles
 const employeeRoles = [
@@ -74,7 +83,13 @@ const employeeSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   role: z.string({ required_error: "Please select a role" }),
   contact: z.string().regex(/^[+-\d]+$/, { message: "Contact number can only contain numbers and + or - symbols" }).min(10, { message: "Contact number must be at least 10 digits" }).max(10, { message: "Contact number must not exceed 10 digits" }),
-  address: z.string().min(5, { message: "Address is required" }),  hourlyRate: z.coerce.number().min(1, { message: "Hourly rate must be at least 1" })
+  address: z.string().min(5, { message: "Address is required" }),
+  hourlyRate: z.coerce.number().min(1, { message: "Hourly rate must be at least 1" }),
+  bankDetails: z.object({
+    accountNumber: z.string().optional(),
+    bankName: z.string().optional(),
+    branch: z.string().optional()
+  }).optional()
 });
 
 // Attendance form schema
@@ -85,7 +100,9 @@ const attendanceSchema = z.object({
       hoursWorked: z.coerce.number().min(0).max(24),
       isLeave: z.boolean().default(false)
     })
-  )
+  ),
+  useManualSalary: z.boolean().default(false),
+  manualSalary: z.coerce.number().optional()
 });
 
 export default function EmployeePage() {
@@ -98,7 +115,12 @@ export default function EmployeePage() {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const { successt, errort, warningt, infot, dismissAll } = useToast()  
+  const [useCustomPeriod, setUseCustomPeriod] = useState(true);
+  const { successt, errort } = useToast();
+  const [genPdf, setGenPdf] = useState(false);
+  const [attendanceAlreadyExists, setAttendanceAlreadyExists] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  
   // Employee form
   const employeeForm = useForm<z.infer<typeof employeeSchema>>({
     resolver: zodResolver(employeeSchema),
@@ -108,7 +130,12 @@ export default function EmployeePage() {
       role: '',
       contact: '',
       address: '',
-      hourlyRate: 0
+      hourlyRate: 0,
+      bankDetails: {
+        accountNumber: '',
+        bankName: '',
+        branch: ''
+      }
     }
   });
   
@@ -116,7 +143,9 @@ export default function EmployeePage() {
   const attendanceForm = useForm<z.infer<typeof attendanceSchema>>({
     resolver: zodResolver(attendanceSchema),
     defaultValues: {
-      entries: []
+      entries: [],
+      useManualSalary: false,
+      manualSalary: 0
     }
   });
   
@@ -152,9 +181,9 @@ export default function EmployeePage() {
   // Prepare attendance form when an employee is selected
   useEffect(() => {
     if (selectedEmployee && openDialog === 'attendance') {
-      prepareAttendanceForm();
+      checkAttendanceExists();
     }
-  }, [selectedEmployee, openDialog]);
+  }, [selectedEmployee, openDialog, currentYear, currentMonth, useCustomPeriod]);
   
   // Fetch all employees
   const fetchEmployees = async () => {
@@ -177,37 +206,85 @@ export default function EmployeePage() {
     }
   };
   
-  // Create calendar entries for the current month
-  const prepareAttendanceForm = async () => {
+  // Check if attendance exists and load it if it does
+  const checkAttendanceExists = async () => {
     try {
-      // Check if attendance data exists for this month
-      const response = await fetch(`/api/employees/${selectedEmployee._id}/attendance?year=${currentYear}&month=${currentMonth}`);
+      // Check if attendance data exists
+      const queryParams = new URLSearchParams({
+        year: currentYear.toString(),
+        month: currentMonth.toString()
+      });
+      
+      if (useCustomPeriod) {
+        queryParams.append('customPeriod', 'true');
+      }
+      
+      const response = await fetch(`/api/employees/${selectedEmployee._id}/attendance?${queryParams}`);
       const attendanceData = await response.json();
       
-      // Get days in the current month
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      // Create entries for each day of the month
+      if (attendanceData && Array.isArray(attendanceData.entries) && attendanceData.entries.length > 0) {
+        setAttendanceAlreadyExists(true);
+        
+        // Load the existing attendance data into the form
+        const entries = attendanceData.entries.map((entry: any) => ({
+          date: new Date(entry.date),
+          hoursWorked: entry.hoursWorked,
+          isLeave: entry.isLeave
+        }));
+        
+        attendanceForm.reset({
+          entries,
+          useManualSalary: attendanceData.manualSalaryAdjustment || false,
+          manualSalary: attendanceData.totalSalary || 0
+        });
+      } else {
+        setAttendanceAlreadyExists(false);
+        prepareAttendanceForm();
+      }
+    } catch (error) {
+      console.error('Error checking attendance:', error);
+      setAttendanceAlreadyExists(false);
+      prepareAttendanceForm();
+    }
+  };
+  
+  // Create calendar entries for the current month or custom period
+  const prepareAttendanceForm = async () => {
+    try {
       let entries = [];
       
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, currentMonth, day);
+      if (useCustomPeriod) {
+        // Custom period: 25th of previous month to 25th of current month
+        const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
         
-        // Skip future dates
-        if (date > new Date()) continue;
+        // Start from 25th of previous month
+        const startDate = new Date(prevYear, prevMonth, 25);
+        // End at 25th of current month
+        const endDate = new Date(currentYear, currentMonth, 25);
         
-        // Find existing entry
-        const existingEntry = attendanceData.entries?.find((entry: any) => 
-          new Date(entry.date).getDate() === day
-        );
-        
-        if (existingEntry) {
+        // Create an entry for each day in the custom period
+        const currentDate = new Date();
+        for (let day = new Date(startDate); day <= endDate; day.setDate(day.getDate() + 1)) {
+          // Skip future dates
+          if (day > currentDate) continue;
+          
           entries.push({
-            date: new Date(existingEntry.date),
-            hoursWorked: existingEntry.hoursWorked,
-            isLeave: existingEntry.isLeave
+            date: new Date(day),
+            hoursWorked: 0,
+            isLeave: false
           });
-        } else {
+        }
+      } else {
+        // Regular month view
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(currentYear, currentMonth, day);
+          
+          // Skip future dates
+          if (date > new Date()) continue;
+          
           entries.push({
             date,
             hoursWorked: 0,
@@ -216,8 +293,15 @@ export default function EmployeePage() {
         }
       }
       
+      // Sort entries by date
+      entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+      
       // Set form values
-      attendanceForm.reset({ entries });
+      attendanceForm.reset({ 
+        entries,
+        useManualSalary: false,
+        manualSalary: 0
+      });
       
     } catch (error) {
       console.error('Error preparing attendance form:', error);
@@ -279,10 +363,22 @@ export default function EmployeePage() {
   // Handle attendance form submission
   const onAttendanceSubmit = async (data: z.infer<typeof attendanceSchema>) => {
     try {
+      // Calculate total hours worked (if not using manual salary)
+      let totalHours = 0;
+      data.entries.forEach((entry) => {
+        if (!entry.isLeave) {
+          totalHours += entry.hoursWorked;
+        }
+      });
+      
       const payload = {
         year: currentYear,
         month: currentMonth,
-        entries: data.entries
+        entries: data.entries,
+        customPeriod: useCustomPeriod,
+        manualSalary: data.useManualSalary ? data.manualSalary : undefined,
+        manualSalaryAdjustment: data.useManualSalary,
+        totalHours: totalHours
       };
       
       const response = await fetch(`/api/employees/${selectedEmployee._id}/attendance`, {
@@ -302,6 +398,7 @@ export default function EmployeePage() {
       });
       
       setOpenDialog(null);
+      setEditMode(false);
       
     } catch (error: any) {
       console.error('Error saving attendance:', error);
@@ -348,7 +445,8 @@ export default function EmployeePage() {
   // Generate and download employee list report
   const generateEmployeeReport = async () => {
     try {
-      let url = '/api/employees/employee-report';
+      // Get filtered employees data
+      let url = '/api/employees';
       
       if (activeTab !== 'all') {
         url += `?role=${activeTab}`;
@@ -357,20 +455,21 @@ export default function EmployeePage() {
       const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error('Failed to generate report');
+        throw new Error('Failed to fetch employees data');
       }
       
-      // Convert the response to a blob and create a download link
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = 'employees-report.pdf';
-      a.style.display = 'none'; // Hide the element
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a); // Remove the element after click
-      window.URL.revokeObjectURL(downloadUrl);
+      const employeesData = await response.json();
+      
+      // Import dynamically to reduce initial load time
+      const { generateEmployeeListPDF } = await import('@/lib/pdfUtils');
+      const jsPDF = (await import('jspdf')).default;
+      await import('jspdf-autotable');
+      
+      // Generate PDF
+      const doc = generateEmployeeListPDF(employeesData, activeTab !== 'all' ? activeTab : undefined);
+      
+      // Save the PDF
+      doc.save('employees-report.pdf');
       
       successt({
         title: "Success",
@@ -384,22 +483,24 @@ export default function EmployeePage() {
         description: error.message || "Failed to generate employee report",
       });
     }
-  };  
+  };
+  
   // Generate and download/email salary report
   const generateSalaryReport = async (sendEmail = false) => {
     if (!selectedEmployee) return;
     
     try {
-      const payload = {
-        employeeId: selectedEmployee._id,
-        year: currentYear,
-        month: currentMonth,
-        sendEmail
-      };
-      
       if (sendEmail) {
         // Send report via email
-        const response = await fetch('/api/employees/reports', {
+        const payload = {
+          employeeId: selectedEmployee._id,
+          year: currentYear,
+          month: currentMonth,
+          sendEmail: true,
+          customPeriod: useCustomPeriod
+        };
+        
+        const response = await fetch('/api/employees/send-salary-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -416,42 +517,16 @@ export default function EmployeePage() {
         });
         
       } else {
-        // Download report
-        const queryParams = new URLSearchParams({
-          employeeId: selectedEmployee._id,
-          year: currentYear.toString(),
-          month: currentMonth.toString()
-        }).toString();
-        
-        const response = await fetch(`/api/employees/reports?${queryParams}`, {
-          method: 'GET'
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to generate salary report');
-        }
-        
-        // Convert the response to a blob and create a download link
-        const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = `salary-report-${selectedEmployee.name.replace(/\s+/g, '-')}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(downloadUrl);
-        
-        successt({
-          title: "Success",
-          description: "Salary report generated successfully!",
-        });
+        // Use SalaryReportComponent to handle PDF generation
+        // This happens via the callback in the component
+        setGenPdf(true);
       }
       
       setOpenDialog(null);
       
     } catch (error: any) {
       console.error('Error with salary report:', error);
-      errort({
+      successt({
         title: "Error",
         description: error.message || "Failed to process salary report",
       });
@@ -467,7 +542,12 @@ export default function EmployeePage() {
       role: employee.role,
       contact: employee.contact,
       address: employee.address,
-      hourlyRate: employee.hourlyRate
+      hourlyRate: employee.hourlyRate,
+      bankDetails: {
+        accountNumber: employee.bankDetails?.accountNumber || '',
+        bankName: employee.bankDetails?.bankName || '',
+        branch: employee.bankDetails?.branch || ''
+      }
     });
     setOpenDialog('edit');
   };
@@ -484,6 +564,17 @@ export default function EmployeePage() {
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
     ][month];
+  };
+  
+  // Format date for display
+  const formatDate = (date: Date) => {
+    if (isToday(date)) {
+      return 'Today';
+    } else if (isYesterday(date)) {
+      return 'Yesterday';
+    } else {
+      return format(date, 'MMM dd, yyyy');
+    }
   };
   
   return (
@@ -521,7 +612,7 @@ export default function EmployeePage() {
             <Plus className="mr-2 h-4 w-4" />
             Add Employee
           </Button>
-        </motion.div>
+          </motion.div>
       </div>
       
       <div className="flex justify-between items-center mb-6">
@@ -587,7 +678,7 @@ export default function EmployeePage() {
                       <CardContent className="space-y-2">
                         <div className="text-sm">
                           <div className="flex items-center space-x-2 text-muted-foreground">
-                            <span>Email:</span>
+                            <Mail className="h-4 w-4" />
                             <span>{employee.email}</span>
                           </div>
                           <div className="flex items-center space-x-2 text-muted-foreground">
@@ -595,8 +686,8 @@ export default function EmployeePage() {
                             <span>{employee.contact}</span>
                           </div>
                           <div className="flex items-center space-x-2 text-muted-foreground">
-                            <span>Rate:</span>
-                            <span>LKR: {employee.hourlyRate} /hour</span>
+                            <DollarSign className="h-4 w-4" />
+                            <span>LKR {employee.hourlyRate} /hour</span>
                           </div>
                         </div>
                         
@@ -627,6 +718,7 @@ export default function EmployeePage() {
                             size="sm"
                             onClick={() => {
                               setSelectedEmployee(employee);
+                              setEditMode(false);
                               setOpenDialog('attendance');
                             }}
                           >
@@ -772,6 +864,49 @@ export default function EmployeePage() {
                 )}
               />
               
+              <div className="pt-2 border-t">
+                <h4 className="text-sm font-medium mb-3">Bank Details (Optional)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={employeeForm.control}
+                    name="bankDetails.bankName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">Bank Name</FormLabel>
+                        <FormControl>
+                          <Input className="w-full" placeholder="Bank of Ceylon" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={employeeForm.control}
+                    name="bankDetails.branch"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">Branch</FormLabel>
+                        <FormControl>
+                          <Input className="w-full" placeholder="Colombo Main" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={employeeForm.control}
+                  name="bankDetails.accountNumber"
+                  render={({ field }) => (
+                    <FormItem className="mt-4">
+                      <FormLabel className="text-sm font-medium">Account Number</FormLabel>
+                      <FormControl>
+                        <Input className="w-full" placeholder="123456789" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
               <DialogFooter className="mt-8">
                 <Button type="submit" className="w-full sm:w-auto">
                   {openDialog === 'add' ? 'Add Employee' : 'Save Changes'}
@@ -784,22 +919,40 @@ export default function EmployeePage() {
       
       {/* Attendance Dialog */}
       <Dialog open={openDialog === 'attendance'} onOpenChange={(open) => {
-        if (!open) setOpenDialog(null);
+        if (!open) {
+          setOpenDialog(null);
+          setEditMode(false);
+        }
       }}>
         <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Attendance Record</DialogTitle>
+            <DialogTitle className="flex items-center">
+              <Clock className="mr-2 h-5 w-5" />
+              Attendance Record
+            </DialogTitle>
             <DialogDescription>
               {selectedEmployee && (
                 <div className="flex flex-col space-y-1 mt-2">
                   <div>Employee: <span className="font-medium">{selectedEmployee.name}</span></div>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={useCustomPeriod}
+                        onCheckedChange={setUseCustomPeriod}
+                        id="custom-period"
+                        disabled={attendanceAlreadyExists && !editMode}
+                      />
+                      <label htmlFor="custom-period" className="text-sm cursor-pointer">
+                        25-25 Payment Period
+                      </label>
+                    </div>
+                    
                     <Select 
                       value={currentMonth.toString()} 
                       onValueChange={(v) => {
                         setCurrentMonth(parseInt(v));
-                        if (selectedEmployee) prepareAttendanceForm();
                       }}
+                      disabled={attendanceAlreadyExists && !editMode}
                     >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Month" />
@@ -817,8 +970,8 @@ export default function EmployeePage() {
                       value={currentYear.toString()} 
                       onValueChange={(v) => {
                         setCurrentYear(parseInt(v));
-                        if (selectedEmployee) prepareAttendanceForm();
                       }}
+                      disabled={attendanceAlreadyExists && !editMode}
                     >
                       <SelectTrigger className="w-[120px]">
                         <SelectValue placeholder="Year" />
@@ -840,76 +993,85 @@ export default function EmployeePage() {
             </DialogDescription>
           </DialogHeader>
           
-          <Form {...attendanceForm}>
-            <form onSubmit={attendanceForm.handleSubmit(onAttendanceSubmit)} className="space-y-4 mt-4">
-              <div className="space-y-4">
-                <div className="rounded-md border">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-muted/50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Hours</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Leave</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {attendanceForm.watch('entries')?.map((entry, index) => (
-                        <tr key={index}>
-                          <td className="px-4 py-2">
-                            {format(new Date(entry.date), 'MMM dd, yyyy')}
-                          </td>
-                          <td className="px-4 py-2 w-32">
-                            <FormField
-                              control={attendanceForm.control}
-                              name={`entries.${index}.hoursWorked`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Input 
-                                      type="number" 
-                                      min="0" 
-                                      max="24" 
-                                      step="0.5" 
-                                      disabled={attendanceForm.watch(`entries.${index}.isLeave`)}
-                                      {...field} 
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </td>
-                          <td className="px-4 py-2 w-24 text-center">
-                            <FormField
-                              control={attendanceForm.control}
-                              name={`entries.${index}.isLeave`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Checkbox 
-                                      checked={field.value}
-                                      onCheckedChange={(checked) => {
-                                        field.onChange(checked);
-                                        if (checked) {
-                                          attendanceForm.setValue(`entries.${index}.hoursWorked`, 0);
-                                        }
-                                      }}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+          {attendanceAlreadyExists && !editMode ? (
+            <div className="space-y-4">
+              <Alert>
+                <AlertTitle className="flex items-center">
+                  <Check className="mr-2 h-4 w-4" />
+                  Attendance Already Recorded
+                </AlertTitle>
+                <AlertDescription>
+                  Attendance has already been recorded for this period. You can view the details below or edit them.
+                </AlertDescription>
+              </Alert>
+              
+              <div className="rounded-md border overflow-hidden">
+                <div className="bg-muted/50 px-4 py-3 text-sm font-medium">
+                  Attendance Summary
+                </div>
+                <div className="p-4 space-y-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm text-muted-foreground">Total Hours</div>
+                      <div className="font-medium text-lg">
+                        {attendanceForm.watch('entries').reduce((sum, entry) => 
+                          !entry.isLeave ? sum + entry.hoursWorked : sum, 0)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Total Salary</div>
+                      <div className="font-medium text-lg">
+                        LKR {attendanceForm.watch('useManualSalary') 
+                          ? attendanceForm.watch('manualSalary')
+                          : (attendanceForm.watch('entries').reduce((sum, entry) => 
+                              !entry.isLeave ? sum + entry.hoursWorked : sum, 0) * selectedEmployee?.hourlyRate || 0).toFixed(2)
+                        }
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <DialogFooter className="flex justify-between">
+              <div className="rounded-md border">
+                <div className="bg-muted/50 px-4 py-3 text-sm font-medium">
+                  Attendance Details
+                </div>
+                <div className="divide-y">
+                  {attendanceForm.watch('entries').map((entry, index) => (
+                    <div key={index} className="p-4 flex justify-between items-center">
+                      <div>
+                        <div className="font-medium">{formatDate(new Date(entry.date))}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {format(new Date(entry.date), 'EEEE')}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        {entry.isLeave ? (
+                          <Badge variant="outline">Leave</Badge>
+                        ) : (
+                          <div>
+                            <div className="font-medium">{entry.hoursWorked} hours</div>
+                            <div className="text-sm text-muted-foreground">
+                              LKR {(entry.hoursWorked * selectedEmployee?.hourlyRate).toFixed(2)}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex justify-between">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setEditMode(true)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit Attendance
+                </Button>
                 <div className="flex space-x-2">
                   <Button 
-                    type="button" 
                     variant="outline"
                     onClick={() => setOpenDialog('salary')}
                   >
@@ -917,10 +1079,176 @@ export default function EmployeePage() {
                     Salary Report
                   </Button>
                 </div>
-                <Button type="submit">Save Attendance</Button>
-              </DialogFooter>
-            </form>
-          </Form>
+              </div>
+            </div>
+          ) : (
+            <Form {...attendanceForm}>
+              <form onSubmit={attendanceForm.handleSubmit(onAttendanceSubmit)} className="space-y-4 mt-4">
+                <div className="space-y-4">
+                  <div className="rounded-md border">
+                    <div className="bg-muted/50 px-4 py-3 flex justify-between items-center">
+                      <span className="text-sm font-medium">Attendance Entries</span>
+                      <Badge variant="outline">
+                        {attendanceForm.watch('entries').length} Days
+                      </Badge>
+                    </div>
+                    <div className="max-h-[400px] overflow-y-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-muted/50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Day</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Hours</th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">Leave</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {attendanceForm.watch('entries')?.map((entry, index) => (
+                            <tr key={index} className={index % 2 === 0 ? 'bg-muted/20' : 'bg-background'}>
+                              <td className="px-4 py-2">
+                                {formatDate(new Date(entry.date))}
+                              </td>
+                              <td className="px-4 py-2">
+                                {format(new Date(entry.date), 'EEEE')}
+                              </td>
+                              <td className="px-4 py-2 w-32">
+                                <FormField
+                                  control={attendanceForm.control}
+                                  name={`entries.${index}.hoursWorked`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormControl>
+                                        <Input 
+                                          type="number" 
+                                          min="0" 
+                                          max="24" 
+                                          step="0.5" 
+                                          disabled={attendanceForm.watch(`entries.${index}.isLeave`)}
+                                          {...field} 
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                              </td>
+                              <td className="px-4 py-2 w-24 text-center">
+                                <FormField
+                                  control={attendanceForm.control}
+                                  name={`entries.${index}.isLeave`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormControl>
+                                        <Checkbox 
+                                          checked={field.value}
+                                          onCheckedChange={(checked) => {
+                                            field.onChange(checked);
+                                            if (checked) {
+                                              attendanceForm.setValue(`entries.${index}.hoursWorked`, 0);
+                                            }
+                                          }}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 p-4 border rounded-md">
+                    <FormField
+                      control={attendanceForm.control}
+                      name="useManualSalary"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center space-x-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-medium cursor-pointer">
+                            Override automatic salary calculation
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  {attendanceForm.watch('useManualSalary') && (
+                    <FormField
+                      control={attendanceForm.control}
+                      name="manualSalary"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">Manual Salary Amount (LKR)</FormLabel>
+                          <FormControl>
+                            <Input type="number" min="0" step="0.01" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Enter the total salary amount for this period
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  
+                  {!attendanceForm.watch('useManualSalary') && (
+                    <div className="p-4 border rounded-md">
+                      <div className="text-sm font-medium mb-2">Salary Summary</div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-sm text-muted-foreground">Total Hours</div>
+                          <div className="font-medium">
+                            {attendanceForm.watch('entries').reduce((sum, entry) => 
+                              !entry.isLeave ? sum + entry.hoursWorked : sum, 0)}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-muted-foreground">Expected Salary</div>
+                          <div className="font-medium">
+                            LKR {(attendanceForm.watch('entries').reduce((sum, entry) => 
+                              !entry.isLeave ? sum + entry.hoursWorked : sum, 0) * selectedEmployee?.hourlyRate || 0).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <DialogFooter className="flex justify-between">
+                  {attendanceAlreadyExists && (
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => setEditMode(false)}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                  )}
+                  <div className="flex space-x-2">
+                    {!attendanceAlreadyExists && (
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={() => setOpenDialog('salary')}
+                      >
+                        <FileText className="h-4 w-4 mr-2" />
+                        Salary Report
+                      </Button>
+                    )}
+                    <Button type="submit">Save Attendance</Button>
+                  </div>
+                </DialogFooter>
+              </form>
+            </Form>
+          )}
         </DialogContent>
       </Dialog>
       
@@ -967,7 +1295,10 @@ export default function EmployeePage() {
       }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Salary Report</DialogTitle>
+            <DialogTitle className="flex items-center">
+              <FileText className="mr-2 h-5 w-5" />
+              Salary Report
+            </DialogTitle>
             <DialogDescription>
               Generate and download salary report or send it via email.
             </DialogDescription>
@@ -976,8 +1307,26 @@ export default function EmployeePage() {
           {selectedEmployee && (
             <div className="space-y-4 my-4">
               <div className="border rounded-md p-4">
-                <div><strong>Employee:</strong> {selectedEmployee.name}</div>
-                <div><strong>Period:</strong> {getMonthName(currentMonth)} {currentYear}</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div><strong>Employee:</strong></div>
+                  <div>{selectedEmployee.name}</div>
+                  <div><strong>Period:</strong></div>
+                  <div>{useCustomPeriod 
+                    ? `${getMonthName(currentMonth === 0 ? 11 : currentMonth - 1)} 25 - ${getMonthName(currentMonth)} 25` 
+                    : getMonthName(currentMonth)}
+                    {" "}{currentYear}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="rounded-md border overflow-hidden">
+                <SalaryReportComponent 
+                  employee={selectedEmployee}
+                  year={currentYear}
+                  month={currentMonth}
+                  customPeriod={useCustomPeriod}
+                  previewMode={true}
+                />
               </div>
               
               <div className="flex flex-col space-y-2">
@@ -1011,6 +1360,26 @@ export default function EmployeePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Hidden component for PDF generation */}
+      {genPdf && selectedEmployee && (
+        <div className="hidden">
+          <SalaryReportComponent
+            employee={selectedEmployee}
+            year={currentYear}
+            month={currentMonth}
+            customPeriod={useCustomPeriod}
+            onGenerate={(pdf) => {
+              pdf.save(`salary-report-${selectedEmployee.name.replace(/\s+/g, '-')}.pdf`);
+              setGenPdf(false);
+              successt({
+                title: "Success",
+                description: "Salary report generated successfully!",
+              });
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -35,7 +35,6 @@ export async function GET(
   }
 }
 
-// You can also add PUT, DELETE, etc. handlers here
 export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -45,6 +44,11 @@ export async function PUT(
     const updateData = await req.json();
     
     await connectToDatabase();
+    
+    // Ensure projectId field is not modified
+    if (updateData.projectId) {
+      delete updateData.projectId;
+    }
     
     const project = await Project.findByIdAndUpdate(
       projectId,
