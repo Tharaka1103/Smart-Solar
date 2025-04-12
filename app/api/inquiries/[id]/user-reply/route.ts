@@ -9,12 +9,10 @@ try {
   // Inquiry model will be defined in the main route file
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const id = params.id
+    const url = new URL(req.url)
+    const id = url.pathname.split('/').pop()
     const { message } = await req.json()
     
     if (!mongoose.Types.ObjectId.isValid(id)) {
