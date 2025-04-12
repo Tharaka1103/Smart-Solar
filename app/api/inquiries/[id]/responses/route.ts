@@ -9,12 +9,10 @@ function isValidObjectId(id: string) {
 }
 
 // POST add a response to an inquiry
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const id = params.id;
+    // Get id from URL pathname
+    const id = req.nextUrl.pathname.split('/')[3];
     const { message } = await req.json();
 
     if (!isValidObjectId(id)) {

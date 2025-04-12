@@ -9,12 +9,16 @@ function isValidObjectId(id: string) {
 }
 
 // GET a specific inquiry
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    const id = params.id;
+    const id = req.nextUrl.pathname.split('/').pop();
+    
+    if (!id) {
+      return NextResponse.json(
+        { message: 'Invalid inquiry ID' },
+        { status: 400 }
+      );
+    }
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(
@@ -44,15 +48,18 @@ export async function GET(
     );
   }
 }
-
 // PUT update inquiry status
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest) {
   try {
-    const id = params.id;
+    const id = req.nextUrl.pathname.split('/').pop();
     const { status } = await req.json();
+
+    if (!id) {
+      return NextResponse.json(
+        { message: 'Invalid inquiry ID' },
+        { status: 400 }
+      );
+    }
 
     if (!isValidObjectId(id)) {
       return NextResponse.json(

@@ -11,10 +11,11 @@ try {
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
 ) {
   try {
-    const id = params.id
+    // Get ID from URL pathname
+    const pathname = req.nextUrl.pathname
+    const id = pathname.split('/').pop() || ''
     const { status } = await req.json()
     
     if (!mongoose.Types.ObjectId.isValid(id)) {
