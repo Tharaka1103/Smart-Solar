@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDownloadUrl } from '@/lib/google-drive';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { fileId: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    const fileId = params.fileId;
+    const fileId = req.nextUrl.searchParams.get('fileId');
     
     if (!fileId) {
       return NextResponse.json(
