@@ -137,7 +137,7 @@ export default function ChatBot() {
           {
             role: "assistant",
             content:
-              "👋 Hello sunshine! I'm Luminex Intelligence, your friendly solar energy buddy! How can I brighten up your day? [Sun]",
+              "👋 Hello there! I'm Luminex Intelligence, your friendly solar energy buddy! How can I brighten up your day? [Sun]",
           },
         ]);
       }, 2000);
@@ -174,7 +174,7 @@ export default function ChatBot() {
       ]);
     } catch (error) {
       console.error("Error sending message:", error);
-      successt({
+      errort({
         title: "Error",
         description: "Failed to get a response. Please try again.",
       });
@@ -379,7 +379,8 @@ export default function ChatBot() {
                 <div ref={messagesEndRef} />
               </CardContent>
 
-              <CardFooter className="p-2 sm:p-3 border-t">
+              <CardFooter className="p-2 sm:p-3 border-t block">
+                <motion.div>
                 <form
                   className="flex w-full gap-1.5 sm:gap-2"
                   onSubmit={(e) => {
@@ -403,7 +404,17 @@ export default function ChatBot() {
                     <Send className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </form>
-              </CardFooter>
+                </motion.div>
+                <motion.div
+                  className="text-xs sm:text-sm text-muted-foreground italic font-light px-2 py-1 rounded-md bg-secondary/20 mt-2"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.3 }}
+                >
+                  Luminex intelligence can make mistakes. Please verify the
+                  information before taking any action.
+                </motion.div>
+              </CardFooter>              
             </Card>
           </motion.div>
         )}

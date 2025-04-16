@@ -1101,22 +1101,6 @@ export default function Home() {
           </motion.div>
         </div>
       </motion.section>
-      
-      {/* Scroll to top button */}
-      <motion.button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-lg z-50"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ 
-          opacity: showScrollButton ? 1 : 0,
-          y: showScrollButton ? 0 : 20
-        }}
-        transition={{ duration: 0.3 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        <ArrowUp className="w-5 h-5" />
-      </motion.button>
     </>
   );
 }
