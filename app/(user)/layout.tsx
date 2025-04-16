@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from '@/contexts/toast-context'
 import { Toaster } from '@/components/ui/toaster'
-
+import ChatBot from "@/components/ChatBot";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,7 +33,8 @@ export default function RootLayout({
             <ThemeProvider>
               <ToastProvider>
                 <Header />
-                {children}
+                {children}  
+                <ChatBot />
                 <Toaster />
                 <Footer />
               </ToastProvider>

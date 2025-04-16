@@ -7,7 +7,12 @@ import {
   CircleCheck, CalendarClock, Users, Settings, FileText, GraduationCap,
   ArrowUp,
   Star,
-  User
+  User,
+  Bot,
+  Brain,
+  Network,
+  Calculator,
+  MessageSquare
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaWhatsapp, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from "framer-motion";
@@ -212,57 +217,43 @@ export default function Home() {
                 animate="animate"
               >
                 <motion.div variants={fadeInUp}>
-                  <Button 
-                    size="lg" 
-                    className="group bg-primary hover:bg-green-900 px-8 py-6 rounded-full text-lg font-medium"
-                  >
-                    Get Started
-                    <motion.span
-                      className="inline-block ml-2"
-                      initial={{ x: 0 }}
-                      whileHover={{ x: 5 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 10 }}
-                    >
-                      <ArrowRight className="w-5 h-5" />
-                    </motion.span>
-                  </Button>
-                </motion.div>
-
-                <motion.div variants={fadeInUp}>
-                  <Link href='/artificial-intelligence'>
+                  <Link href='/contact'>
                     <Button 
                       size="lg" 
-                      variant="outline"
-                      className="relative overflow-hidden border-primary text-primary px-8 py-6 rounded-full text-lg font-medium group"
+                      className="group bg-primary hover:bg-green-900 px-8 py-6 rounded-full text-lg font-medium"
                     >
-                      <motion.span 
-                        className="absolute inset-0 w-full h-full bg-gradient-to-r from-green-600 to-green-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        initial={{ opacity: 0 }}
-                        whileHover={{ opacity: 1 }}
-                      />
-                      <motion.span className="relative flex items-center justify-center gap-2 z-10">
-                        <SparklesText 
-                          text="Try our Intelligence" 
-                          sparklesCount={15}
-                          className="text-primary text-sm font-medium"
-                        />
-                        <motion.span
-                          animate={{ 
-                            y: [0, -3, 0],
-                            rotate: [0, -5, 0, 5, 0] 
-                          }}
-                          transition={{ 
-                            duration: 1.5, 
-                            repeat: Infinity,
-                            repeatType: "reverse" 
-                          }}
-                        >
-                          <Sparkles className="w-5 h-5" />
-                        </motion.span>
+                      Get Started
+                      <motion.span
+                        className="inline-block ml-2"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 5 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 10 }}
+                      >
+                        <ArrowRight className="w-5 h-5" />
                       </motion.span>
                     </Button>
                   </Link>
                 </motion.div>
+
+                <motion.div variants={fadeInUp}>
+                  <Link href='/inquiries'>
+                    <Button
+                      variant="outline"
+                      size="lg" 
+                      className="rounded-full text-lg font-medium bg-transparent text-primary border-primary hover:bg-primary hover:text-white"
+                    >
+                      Submit an Inquiry
+                      <motion.span
+                        className="inline-block ml-2"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 5 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 10 }}
+                      >
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.span>
+                    </Button>
+                  </Link>
+                </motion.div>           
               </motion.div>
             </motion.div>
 
@@ -320,6 +311,138 @@ export default function Home() {
             />
           </motion.div>
         </motion.div>
+      </motion.section>
+
+      {/* Luminex Intelligence Section */}
+      <motion.section
+        className="py-24 bg-gradient-to-b from-background to-card relative overflow-hidden"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: false, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="container mx-auto px-4">
+          {/* Alert Banner */}
+          <motion.div
+            className="mb-12 bg-alert border border-primary rounded-2xl p-6 relative overflow-hidden"
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4">
+              <Sparkles className="w-8 h-8 text-primary animate-pulse" />
+              <div>
+                <h4 className="text-lg font-semibold text-primary">New AI Technology Released</h4>
+                <p className="">Experience the next generation of artificial intelligence solutions</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Main Content */}
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Badge className="bg-primary/10 text-primary mb-4 px-4 py-1">Luminex Intelligence</Badge>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text">
+                Advanced AI Solutions for Tomorrow
+              </h2>
+              <motion.p className="text-muted-foreground max-w-2xl mx-auto">
+                Harness the power of cutting-edge artificial intelligence to transform your business with our innovative solutions and expert guidance.
+              </motion.p>
+            </motion.div>
+          </div>
+
+          {/* Feature Cards Grid */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.2
+                }
+              }
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false }}
+          >
+            {/* Card 1 */}
+            <motion.div
+              className="group p-6 bg-card backdrop-blur-sm rounded-2xl border border-primary hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+              variants={{
+                hidden: { y: 20, opacity: 0 },
+                show: { y: 0, opacity: 1 }
+              }}
+            >
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <MessageSquare className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Luminex Intelligence Chat</h3>
+              <p className="text-muted-foreground">Advanced AI-powered chat system for intelligent conversations and support.</p>
+            </motion.div>
+
+            {/* Card 2 */}
+            <motion.div
+              className="group p-6 bg-card backdrop-blur-sm rounded-2xl border border-primary hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+              variants={{
+                hidden: { y: 20, opacity: 0 },
+                show: { y: 0, opacity: 1 }
+              }}
+            >
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Calculator className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">AI Quotation Generator</h3>
+              <p className="text-muted-foreground">Automated quotation system powered by AI for accurate and instant pricing.</p>
+            </motion.div>
+
+            {/* Card 3 */}
+            <motion.div
+              className="group p-6 bg-card backdrop-blur-sm rounded-2xl border border-primary hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+              variants={{
+                hidden: { y: 20, opacity: 0 },
+                show: { y: 0, opacity: 1 }
+              }}
+            >
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Zap className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Real-time Processing</h3>
+              <p className="text-muted-foreground">Instant responses and calculations for efficient business operations.</p>
+            </motion.div>
+          </motion.div>
+          {/* CTA Button */}
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <Link href="/artificial-intelligence">
+              <Button
+                size="lg"
+                className="bg-alert text-text border border-primary rounded-full px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 w-full sm:w-auto"
+              >
+                <SparklesText 
+                  text="Explore AI Solutions" 
+                  sparklesCount={20}
+                  className="p-2 sm:p-3 text-md sm:text-lg"
+                />
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>            
+            </Link>
+          </motion.div>
+
+          {/* Floating Elements */}
+          <div className="absolute top-20 left-10 w-20 h-20 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute top-40 right-1/4 w-28 h-28 bg-primary/5 rounded-full blur-2xl" />
+        </div>
       </motion.section>
 
       {/* Stats Section with Counter Animation */}
