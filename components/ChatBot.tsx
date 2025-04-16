@@ -311,7 +311,7 @@ export default function ChatBot() {
                       className={`max-w-[85%] sm:max-w-[80%] rounded-lg p-2 sm:p-3 ${
                         message.role === "user"
                           ? "bg-emerald-900 text-white ml-auto"
-                          : "bg-muted"
+                          : "bg-background"
                       }`}
                     >
                       {message.role === "assistant" && (
@@ -388,7 +388,7 @@ export default function ChatBot() {
                   }}
                 >
                   <Input
-                    placeholder="Ask me about solar energy..."
+                    placeholder="Ask me anything about solar..."
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     className="flex-1 text-xs sm:text-sm"
