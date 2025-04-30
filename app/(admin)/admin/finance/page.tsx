@@ -241,7 +241,7 @@ export default function FinanceManagement() {
     }
   };
 
-  // Handle delete finance
+  // Handle delete the finance
   const handleDeleteFinance = async () => {
     if (!selectedFinance) return;
 
