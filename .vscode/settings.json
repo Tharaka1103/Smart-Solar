@@ -1,0 +1,5 @@
+{
+    "cody.customHeaders": {},
+    "cody.commandCodeLenses": true,
+    "files.autoSave": "onFocusChange"
+}
