@@ -225,13 +225,13 @@ export default function EmployeePage() {
       if (attendanceData && Array.isArray(attendanceData.entries) && attendanceData.entries.length > 0) {
         setAttendanceAlreadyExists(true);
         
-        // Load the existing attendance data into the form
+        
         const entries = attendanceData.entries.map((entry: any) => ({
           date: new Date(entry.date),
           hoursWorked: entry.hoursWorked,
           isLeave: entry.isLeave
         }));
-        
+        // Load the existing attendance data into the form
         attendanceForm.reset({
           entries,
           useManualSalary: attendanceData.manualSalaryAdjustment || false,
