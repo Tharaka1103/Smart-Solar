@@ -134,7 +134,7 @@ export default function InquiriesPage() {
     }
   }
   
-  // Handle existing customer form submission
+  // Handle existing customer form submission.
   const handleExistingCustomerSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
