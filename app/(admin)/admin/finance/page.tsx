@@ -736,7 +736,7 @@ export default function FinanceManagement() {
                       layout
                     >
                       <Card className="border border-green-200 dark:border-green-800 hover:shadow-md transition-all">
-                        {/* Same card content as above, but only for income */}
+                        {/* Same card content as above, but it only for income */}
                         <CardHeader className="pb-2">
                           <div className="flex justify-between items-start">
                             <CardTitle className="text-lg font-medium line-clamp-1">{finance.title}</CardTitle>
