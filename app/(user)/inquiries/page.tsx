@@ -59,7 +59,7 @@ export default function InquiriesPage() {
     message: ''
   })
   
-  // Form data for new customer
+  // Form data for strat new customer
   const [newCustomerForm, setNewCustomerForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
