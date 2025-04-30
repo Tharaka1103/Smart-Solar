@@ -206,7 +206,7 @@ export default function EmployeePage() {
     }
   };
   
-  // Check if attendance exists and load it if it does
+  
   const checkAttendanceExists = async () => {
     try {
       // Check if attendance data exists
