@@ -211,7 +211,7 @@ export default function FinanceManagement() {
     }
   };
 
-  // Handle update finance
+  // Handle a update finance
   const handleUpdateFinance = async (values: FinanceFormValues) => {
     if (!selectedFinance) return;
 
