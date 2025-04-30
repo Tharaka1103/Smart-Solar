@@ -900,7 +900,7 @@ export default function FinanceManagement() {
           </TabsContent>
         </Tabs>
         
-        {/* View Finance Dialog */}
+        {/* View the Finance Dialog */}
         {selectedFinance && (
           <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
             <DialogContent className="sm:max-w-[600px]">
