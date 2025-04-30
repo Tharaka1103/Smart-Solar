@@ -82,7 +82,7 @@ export default function InquiriesPage() {
     }
   }, [user])
   
-  // Handle customer lookup
+  // Handle customer lookup.
   const handleCustomerLookup = async () => {
     if (!identifier.trim()) {
       errort({
