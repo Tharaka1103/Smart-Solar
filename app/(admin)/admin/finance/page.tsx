@@ -267,7 +267,7 @@ export default function FinanceManagement() {
     }
   };
 
-  // Set up edit form when a finance is selected for editing
+  // Set up the edit form when a finance is selected for editing
   useEffect(() => {
     if (selectedFinance && isEditOpen) {
       form.reset({
