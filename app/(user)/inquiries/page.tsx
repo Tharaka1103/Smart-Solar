@@ -271,7 +271,7 @@ export default function InquiriesPage() {
         message: ''
       })
       
-      // Show success message
+      // Show success message.
       setShowSuccess(true)
       setTimeout(() => {
         setShowSuccess(false)
