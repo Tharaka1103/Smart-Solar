@@ -1002,7 +1002,7 @@ export default function FinanceManagement() {
           </Dialog>
         )}
         
-        {/* Edit Finance Dialog */}
+        {/* Edit the Finance Dialog */}
         {selectedFinance && (
           <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
             <DialogContent className="sm:max-w-[600px]">
