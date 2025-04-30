@@ -248,11 +248,11 @@ export default function EmployeePage() {
     }
   };
   
-  // Create calendar entries for the current month or custom period
+  
   const prepareAttendanceForm = async () => {
     try {
       let entries = [];
-      
+      // Create calendar entries for the current month or custom period
       if (useCustomPeriod) {
         // Custom period: 25th of previous month to 25th of current month
         const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
