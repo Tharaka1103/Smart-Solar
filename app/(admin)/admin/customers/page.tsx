@@ -147,7 +147,7 @@ export default function CustomersPage() {
     fetchCustomers()
   }, [currentPage, searchTerm, selectedDistrict, selectedService])
 
-  // Fetch customers from API
+  // Fetch customers from API.
   const fetchCustomers = async () => {
     setLoading(true)
     try {
