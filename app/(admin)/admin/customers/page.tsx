@@ -195,7 +195,7 @@ export default function CustomersPage() {
     }
   }
 
-  // Handle updating a customer.
+  // Handle updating a customer
   const onUpdate = async (values: z.infer<typeof customerFormSchema>) => {
     if (!selectedCustomer) return
     
