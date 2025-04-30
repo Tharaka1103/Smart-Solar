@@ -1180,7 +1180,7 @@ export default function FinanceManagement() {
           </Dialog>
         )}
         
-        {/* Delete Confirmation Dialog */}
+        {/* Delete the Confirmation Dialog */}
         {selectedFinance && (
           <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
             <AlertDialogContent>
