@@ -147,7 +147,7 @@ export default function CustomersPage() {
     fetchCustomers()
   }, [currentPage, searchTerm, selectedDistrict, selectedService])
 
-  // Fetch customers from API.
+  // Fetch customers from API
   const fetchCustomers = async () => {
     setLoading(true)
     try {
@@ -168,7 +168,7 @@ export default function CustomersPage() {
     }
   }
 
-  // Handle adding a new customer
+  // Handle adding a new customer.
   const onSubmit = async (values: z.infer<typeof customerFormSchema>) => {
     try {
       const response = await fetch('/api/customers', {
