@@ -276,7 +276,7 @@ export default function EmployeePage() {
           });
         }
       } else {
-        // Regular month view
+        
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         
         for (let day = 1; day <= daysInMonth; day++) {
@@ -312,7 +312,7 @@ export default function EmployeePage() {
     }
   };
   
-  // Handle employee form submission (create/update)
+  // Handle employee form submission (create/update) // Regular month view
   const onEmployeeSubmit = async (data: z.infer<typeof employeeSchema>) => {
     try {
       let response;
