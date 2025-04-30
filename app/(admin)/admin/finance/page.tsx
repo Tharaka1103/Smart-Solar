@@ -584,7 +584,7 @@ export default function FinanceManagement() {
           </motion.div>
         </div>
         
-        {/* Tabs and Finance Records */}
+        {/*The Tabs and Finance Records */}
         <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-between items-center mb-4">
             <TabsList>
