@@ -195,7 +195,7 @@ export default function CustomersPage() {
     }
   }
 
-  // Handle updating a customer
+  // Handle updating a customer.
   const onUpdate = async (values: z.infer<typeof customerFormSchema>) => {
     if (!selectedCustomer) return
     
@@ -262,7 +262,7 @@ export default function CustomersPage() {
     setIsEditCustomerOpen(true)
   }
 
-  // Export customers data to CSV
+  // Export customers data to CSV.
   const exportToCSV = () => {
     if (customers.length === 0) {
 
