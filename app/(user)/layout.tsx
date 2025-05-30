@@ -7,11 +7,8 @@ import Footer from "@/components/Footer";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from '@/contexts/toast-context'
 import { Toaster } from '@/components/ui/toaster'
-<<<<<<< Updated upstream
-=======
 import ChatBot from "@/components/ChatBot";
 import { PreLoader } from "@/components/PreLoader";  // We'll create this component
->>>>>>> Stashed changes
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,18 +31,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-<<<<<<< Updated upstream
-          <AuthProvider>
-            <ThemeProvider>
-              <ToastProvider>
-                <Header />
-                {children}
-                <Toaster />
-                <Footer />
-              </ToastProvider>
-            </ThemeProvider>
-          </AuthProvider>
-=======
         <AuthProvider>
           <ThemeProvider>
             <ToastProvider>
@@ -58,6 +43,5 @@ export default function RootLayout({
             </ToastProvider>
           </ThemeProvider>
         </AuthProvider>
->>>>>>> Stashed changes
   );
 }

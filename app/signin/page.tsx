@@ -1,4 +1,5 @@
 "use client"
+import { Suspense } from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -32,7 +33,7 @@ const formSchema = z.object({
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 })
 
-export default function SignInPage() {
+function SignInContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState("")
@@ -40,14 +41,14 @@ export default function SignInPage() {
   const { successt, errort, warningt, infot, dismissAll } = useToast()
 
   // Get the callback URL but don't show it if it's just /dashboard
-  const callbackUrl = searchParams.get("callbackUrl")
+  const callbackUrl = searchParams?.get("callbackUrl")
   const shouldShowCallback = callbackUrl && callbackUrl !== "/dashboard"
   
   // Check for registration success message
   useEffect(() => {
-    const registered = searchParams.get("registered")
-    const resetSuccess = searchParams.get("reset")
-    const errorParam = searchParams.get("error")
+    const registered = searchParams?.get("registered")
+    const resetSuccess = searchParams?.get("reset")
+    const errorParam = searchParams?.get("error")
     
     if (registered === "true") {
       setSuccess("Registration successful! Please sign in with your credentials.")
@@ -100,49 +101,42 @@ export default function SignInPage() {
     },
   })
 
-  // Add this to your onSubmit function in the signin page
-  // In your onSubmit function in sign-in page
-async function onSubmit(values: z.infer<typeof formSchema>) {
-  setIsLoading(true)
-  setError("")
-  
-  try {
-    console.log("Attempting to sign in with:", values.email)
-    const user = await signIn(values.email, values.password)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
+    setError("")
     
-    console.log("Sign-in successful, checking for redirection")
-    successt({
-      title: "Sign-in successful!",
-      description: "You have successfully signed in.",
-    })
-    // Add a fallback redirection mechanism
-    const redirectTimer = setTimeout(() => {
-      console.log("Fallback redirection triggered")
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}')
-      const role = storedUser?.role || 'user'
+    try {
+      const user = await signIn(values.email, values.password)
       
-      if (role === 'admin') {
-        window.location.href = '/admin'
-      } else if (role === 'manager') {
-        window.location.href = '/manager'
-      } else {
-        window.location.href = '/dashboard'
-      }
-    }, 1000) // Wait 1 second before fallback redirection
-    
-    return () => clearTimeout(redirectTimer)
-  } catch (error: any) {
-    console.error("Sign in error:", error)
-    setError(error.message || "Failed to sign in. Please check your credentials.")
-    errort({
-      title: "Sign-in failed!",
-      description: "Please check your credentials and try again.",
-    })
-  } finally {
-    setIsLoading(false)
+      successt({
+        title: "Sign-in successful!",
+        description: "You have successfully signed in.",
+      })
+      // Add a fallback redirection mechanism
+      const redirectTimer = setTimeout(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}')
+        const role = storedUser?.role || 'user'
+        
+        if (role === 'admin') {
+          window.location.href = '/admin'
+        } else if (role === 'manager') {
+          window.location.href = '/manager'
+        } else {
+          window.location.href = '/dashboard'
+        }
+      }, 1000) // Wait 1 second before fallback redirection
+      
+      return () => clearTimeout(redirectTimer)
+    } catch (error: any) {
+      setError(error.message || "Failed to sign in. Please check your credentials.")
+      errort({
+        title: "Sign-in failed!",
+        description: "Please check your credentials and try again.",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
-}
-
 
   return (
     <div className="container flex items-center justify-center min-h-screen py-12">
@@ -260,5 +254,12 @@ async function onSubmit(values: z.infer<typeof formSchema>) {
         </Card>
       </motion.div>
     </div>
+  )
+}
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInContent />
+    </Suspense>
   )
 }

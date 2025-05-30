@@ -1,75 +1,73 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { motion } from "framer-motion"
-import { BrainCircuit, Calculator, Sparkles } from "lucide-react"
-import QuotationGenerator from "@/components/luminex/QuotationGenerator"
-import QuestionAnswering from "@/components/luminex/QuestionAnswering"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState, useEffect, useRef  } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertCircle, MessageSquare, FileText } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { motion } from "framer-motion";
+import SolarQuotationGenerator from "@/components/ai/SolarQuotationGenerator";
+import SolarChatInterface from "@/components/ai/SolarChatInterface";
+import { WarpBackground } from "@/components/magicui/warp-background";
+import { SparklesText } from "@/components/magicui/sparkles-text";
+import { Confetti, type ConfettiRef } from "@/components/magicui/confetti";
 
-export default function LuminexPage() {
+export default function ArtificialIntelligencePage() {
+  const [showConfetti, setShowConfetti] = useState(false);
+  const confettiRef = useRef<ConfettiRef>(null);
+
+  // Trigger confetti after component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowConfetti(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 mt-10">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-10"
-      >
-        <div className="flex items-center justify-center mb-4">
-          <Sparkles className="h-10 w-10 text-primary mr-2" />
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-600 to-yellow-400 bg-clip-text text-transparent">
-            Luminex Intelligence
-          </h1>
-          <Sparkles className="h-10 w-10 text-yellow-400 ml-2" />
-        </div>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Your smart assistant for solar solutions and information
-        </p>
-      </motion.div>
-
-      <Card className="border-2 border-primary/10 shadow-lg">
-        <CardContent className="p-6">
+    <div className="container mx-auto py-5 px-4 max-w-7xl p-5">
+        <WarpBackground>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8 p-4 bg-secondary/30 rounded-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="font-medium text-lg mb-2 flex items-center">
-              <BrainCircuit className="w-5 h-5 mr-2 text-primary" />
-              Instructions
-            </h2>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Use the <strong>Solar Quotation</strong> tab to generate a customized solar system quote</li>
-              <li>Use the <strong>Ask Luminex</strong> tab to get answers about our company and services</li>
-              <li>Be specific with your requirements to get the most accurate information</li>
-            </ul>
-          </motion.div>
+            <h1 className="text-4xl font-bold text-center text-primary mb-2">
+              <SparklesText text="Luminex Intelligence" />
+            </h1>
+            <p className="text-lg text-center text-muted-foreground mb-6">
+              AI-powered solar solutions to help you make informed decisions
+            </p>
 
-          <Tabs defaultValue="quotation" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="quotation">
-                <Calculator className="mr-2 h-5 w-5" />
-                Solar Quotation
-              </TabsTrigger>
-              <TabsTrigger value="questions">
-                <BrainCircuit className="mr-2 h-5 w-5" />
-                Ask Luminex
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="quotation" className="mt-5">
-              <QuotationGenerator />
-            </TabsContent>
-            
-            <TabsContent value="questions" className="mt-5">
-              <QuestionAnswering />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            <Alert className="mb-8 border-amber-500/50 bg-amber-500/10">
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              <AlertTitle className="text-amber-500 font-medium">Important Note</AlertTitle>
+              <AlertDescription>
+                Our AI tools provide estimates and information based on available data. While we strive for 
+                accuracy, these results should be considered as guidance only. For precise quotations, 
+                please consult with our solar experts.
+              </AlertDescription>
+            </Alert>
+
+            <Tabs defaultValue="quotation" className="w-full">
+              <TabsList className="grid grid-cols-2">
+                <TabsTrigger value="quotation" className="">
+                  <FileText className="h-4 w-4" /> Solar Quotation Generator
+                </TabsTrigger>
+                <TabsTrigger value="chat" className="">
+                  <MessageSquare className="h-4 w-4" /> Ask Luminex AI
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="quotation" className="mt-10">
+                <SolarQuotationGenerator />
+              </TabsContent>
+              
+              <TabsContent value="chat" className="mt-10">
+                <SolarChatInterface />
+              </TabsContent>
+            </Tabs>
+          </motion.div>
+        </WarpBackground>
     </div>
-  )
+  );
 }

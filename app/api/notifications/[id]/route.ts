@@ -4,18 +4,14 @@ import { connectToDatabase } from '@/lib/db';
 import Notification from '@/models/Notification';
 
 // Delete a single notification by ID
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request) {
   try {
-
+    // Get ID from URL using pathname
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
 
     // Connect to database
     await connectToDatabase();
-
-    // Get ID from URL
-    const { id } = params;
 
     // Delete the notification
     const result = await Notification.findByIdAndDelete(id);

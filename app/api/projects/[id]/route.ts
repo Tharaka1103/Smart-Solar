@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import Project from '@/models/Project';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    // Get the project ID from the route parameter
-    const projectId = params.id;
+    // Get the project ID from the URL
+    const url = new URL(req.url);
+    const pathSegments = url.pathname.split('/');
+    const projectId = pathSegments[pathSegments.length - 1];
     
     // Connect to the database
     await connectToDatabase();
@@ -35,16 +34,19 @@ export async function GET(
   }
 }
 
-// You can also add PUT, DELETE, etc. handlers here
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest) {
   try {
-    const projectId = params.id;
+    const url = new URL(req.url);
+    const pathSegments = url.pathname.split('/');
+    const projectId = pathSegments[pathSegments.length - 1];
     const updateData = await req.json();
     
     await connectToDatabase();
+    
+    // Ensure projectId field is not modified
+    if (updateData.projectId) {
+      delete updateData.projectId;
+    }
     
     const project = await Project.findByIdAndUpdate(
       projectId,
@@ -69,12 +71,11 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest) {
   try {
-    const projectId = params.id;
+    const url = new URL(req.url);
+    const pathSegments = url.pathname.split('/');
+    const projectId = pathSegments[pathSegments.length - 1];
     
     await connectToDatabase();
     

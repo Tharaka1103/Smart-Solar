@@ -116,7 +116,8 @@ const signIn = async (email: string, password: string) => {
       
       // Store user data in localStorage as a backup
       localStorage.setItem('user', JSON.stringify(data.user))
-      
+      localStorage.setItem('token', JSON.stringify(data.token))
+
       // IMPORTANT: Use a more direct approach for redirection
       // Delay slightly to ensure state updates have completed
       setTimeout(() => {

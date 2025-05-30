@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 // Document interface
 export interface ProjectDocument extends Document {
+  projectId: string;
   title: string;
   userName: string;
   email: string;
@@ -11,6 +12,7 @@ export interface ProjectDocument extends Document {
   systemSize: string;
   installationDate: string;
   completionDate: string;
+  status: 'pending' | 'approved' | 'completed';
   documents: {
     nic: {
       fileId: string;
@@ -45,10 +47,12 @@ export interface ProjectDocument extends Document {
     date: Date;
     status: string;
   }[];
+  maintenanceRecords: mongoose.Types.ObjectId[];
 }
 
 // Schema
 const ProjectSchema = new Schema<ProjectDocument>({
+  projectId: { type: String, required: true, unique: true },
   title: { type: String, required: true },
   userName: { type: String, required: true },
   email: { type: String, required: true },
@@ -58,6 +62,11 @@ const ProjectSchema = new Schema<ProjectDocument>({
   systemSize: { type: String, required: true },
   installationDate: { type: String },
   completionDate: { type: String },
+  status: { 
+    type: String, 
+    enum: ['pending', 'approved', 'completed'], 
+    default: 'pending' 
+  },
   documents: {
     nic: {
       fileId: { type: String },
@@ -90,8 +99,9 @@ const ProjectSchema = new Schema<ProjectDocument>({
   },
   progress: [{
     date: { type: Date, default: Date.now },
-    status: { type: String,}
-  }]
+    status: { type: String }
+  }],
+  maintenanceRecords: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Maintenance' }]
 });
 
 // Create or get the model

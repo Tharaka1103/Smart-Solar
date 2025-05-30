@@ -6,7 +6,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
 @layer base {
   :root {
     --background: #f4fcec;
@@ -24,7 +23,7 @@ body {
     --muted-foreground: #757575;
     --accent: #F4F4F5;
     --accent-foreground: #1A1A1C;
-    --destructive: #ffcdcd;
+    --destructive: #ff0000;
     --destructive-foreground: #FAFAFA;
     --border: #E5E5E7;
     --input: #E5E5E7;
@@ -36,6 +35,12 @@ body {
     --chart-4: #F1C40F;
     --chart-5: #E67E22;
     --alert: #defcba;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
+    --alert: #d0f9c1;
   }
 
   .dark {
@@ -65,6 +70,16 @@ body {
     --chart-4: #805AD5;
     --chart-5: #D53F8C;
     --alert: #070c00;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
+    --alert: #093300;
+  }
+  .theme {
+    --animate-shine: shine var(--duration) infinite linear;
+    --rainbow: rainbow var(--speed, 2s) infinite linear;
   }
 }
 @layer base {
@@ -99,4 +114,26 @@ body {
 .delay-500 { animation-delay: 500ms; }
 .delay-700 { animation-delay: 700ms; }
 
+@theme inline {
+  --animate-shine: shine var(--duration) infinite linear;
 
+  @keyframes shine {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    to {
+      background-position: 0% 0%;
+    }
+  }
+  @keyframes rainbow {
+  0% {
+    background-position: 0%;
+    }
+  100% {
+    background-position: 200%;
+    }
+  }
+}

@@ -1,166 +1,339 @@
 'use client'
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaArrowRight } from 'react-icons/fa';
+import Link from "next/link"
+import { motion } from "framer-motion"
+import { useTheme } from '@/providers/ThemeProvider'
+import { 
+  Sun, 
+  Mail, 
+  Phone, 
+  MapPin,
+  HeartIcon, 
+  MessageSquare, 
+  ExternalLink, 
+  ChevronRight, 
+  ArrowRight, 
+  Send, 
+  BarChart3, 
+  Sparkles,
+  Leaf,
+  Shield,
+  ScanHeart,
+  Heart
+} from "lucide-react"
+import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin, FaYoutube, FaWhatsapp } from "react-icons/fa"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+
+const footerLinks = {
+  solutions: [
+    { name: "Residential Solar", href: "/residential" },
+    { name: "Commercial Systems", href: "/commercial" },
+    { name: "Battery Storage", href: "/battery-storage" },
+    { name: "Smart Energy Management", href: "/smart-energy" },
+    { name: "Off-Grid Solutions", href: "/off-grid" }
+  ],
+  company: [
+    { name: "About Us", href: "/about" },
+    { name: "Leadership Team", href: "/team" },
+    { name: "Careers", href: "/careers" },
+    { name: "News & Press", href: "/news" },
+    { name: "Sustainability", href: "/sustainability" }
+  ],
+  resources: [
+    { name: "Solar Calculator", href: "/calculator" },
+    { name: "Maintenance Tips", href: "/maintenance-tips" },
+    { name: "Case Studies", href: "/case-studies" },
+    { name: "Solar Glossary", href: "/glossary" },
+    { name: "Blog & Insights", href: "/blog" }
+  ],
+  support: [
+    { name: "Contact Us", href: "/contact" },
+    { name: "FAQ", href: "/faq" },
+    { name: "Submit Inquiry", href: "/inquiries" },
+    { name: "Customer Portal", href: "/portal" },
+    { name: "Support Center", href: "/support" }
+  ]
+}
+
+const socialLinks = [
+  { name: "Facebook", icon: <FaFacebook />, href: "https://facebook.com", color: "bg-blue-600" },
+  { name: "Instagram", icon: <FaInstagram />, href: "https://instagram.com", color: "bg-pink-600" },
+  { name: "Twitter", icon: <FaTwitter />, href: "https://twitter.com", color: "bg-sky-500" },
+  { name: "LinkedIn", icon: <FaLinkedin />, href: "https://linkedin.com", color: "bg-blue-700" },
+  { name: "YouTube", icon: <FaYoutube />, href: "https://youtube.com", color: "bg-red-600" },
+  { name: "WhatsApp", icon: <FaWhatsapp />, href: "https://whatsapp.com", color: "bg-green-500" }
+]
+
+const statsItems = [
+  { label: "Projects Completed", value: "10,000+", icon: <BarChart3 className="w-5 h-5 text-primary" /> },
+  { label: "CO₂ Prevented", value: "80M kg", icon: <Leaf className="w-5 h-5 text-primary" /> },
+  { label: "Energy Saved", value: "₹120M+", icon: <Sparkles className="w-5 h-5 text-primary" /> },
+  { label: "Customer Satisfaction", value: "99%", icon: <Shield className="w-5 h-5 text-primary" /> }
+]
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.1,
+      delayChildren: 0.3
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { 
+    y: 0, 
+    opacity: 1,
+    transition: { type: "spring", stiffness: 300, damping: 24 }
+  }
+}
 
 export default function Footer() {
+  const { theme } = useTheme()
+  const currentYear = new Date().getFullYear()
+  
   return (
-    <footer className="bg-footer relative">
-      <div className="absolute inset-0 bg-pattern opacity-5"></div>
-      <div className="max-w-7xl mx-auto px-4 py-16 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Company Info */}
-          <motion.div className="space-y-6">
-            <Link href="/" className="block transform hover:scale-105 transition-transform duration-300">
-              <div className="relative w-[120px] h-[48px] md:w-[140px] md:h-[56px]">
-                <Image 
-                  src="/logo.png" 
-                  alt="SolarTech Solutions" 
-                  fill
-                  className="object-contain"
-                  priority
-                />
+    <footer className="bg-card relative overflow-hidden border-t border-border">
+      
+      {/* Newsletter section */}
+      <div className="relative">
+        <div className="container mx-auto px-4 py-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="relative bg-background rounded-2xl p-8 md:p-12 shadow-lg border border-border overflow-hidden"
+          >
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
+            
+            <div className="relative grid md:grid-cols-5 gap-8 items-center">
+              <div className="md:col-span-3">
+                <Badge variant="outline" className="mb-4 px-3 py-1.5 border-primary text-primary">
+                  Stay Updated
+                </Badge>
+                <h2 className="text-3xl sm:text-4xl font-bold mb-4">Join our solar community</h2>
+                <p className="text-muted-foreground max-w-xl mb-4">
+                  Subscribe to our newsletter for the latest solar technology updates, 
+                  energy-saving tips, and exclusive offers.
+                </p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Shield className="w-4 h-4" />
+                  <span>We respect your privacy. Unsubscribe at any time.</span>
+                </div>
               </div>
-            </Link>
-            <p className="text-lg leading-relaxed  hover: transition-colors">
-              Pioneering sustainable energy solutions since 2010. Transforming the way the world harnesses solar power with cutting-edge technology and unmatched expertise.
-            </p>
-            <div className="flex items-center space-x-4">
-              <span className="text-primary font-semibold">Rating:</span>
-              <div className="flex text-yellow-400">
-                {'★'.repeat(5)}
+              <div className="md:col-span-2">
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Input 
+                      type="email" 
+                      placeholder="Enter your email" 
+                      className="h-12 pl-4 pr-12 bg-card"
+                    />
+                    <Button 
+                      className="absolute right-1 top-1 h-10 w-10 p-0 bg-primary hover:bg-primary/90"
+                      size="icon"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-primary hover:bg-primary/90 text-white rounded-md h-12 flex items-center justify-center gap-2 font-medium"
+                  >
+                    Subscribe Now
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.button>
+                </div>
               </div>
             </div>
           </motion.div>
-
-          {/* Quick Links */}
-          <motion.div className="space-y-6">
-            <h4 className="text-xl font-bold  relative inline-block">
-              Quick Links
-              <span className="absolute bottom-0 left-0 w-1/2 h-1 bg-primary rounded-full"></span>
-            </h4>
-            <ul className="space-y-4">
-              {[
-                { href: '/services', text: 'Solar Installation', icon: '🔧' },
-                { href: '/products', text: 'Solar Panels', icon: '☀️' },
-                { href: '/calculator', text: 'Energy Calculator', icon: '🔢' },
-                { href: '/about', text: 'About Us', icon: '👥' },
-                { href: '/blog', text: 'Solar Blog', icon: '📝' },
-                { href: '/testimonials', text: 'Success Stories', icon: '⭐' }
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="group flex items-center space-x-2  hover:text-primary transition-all duration-300">
-                    <span>{link.icon}</span>
-                    <span>{link.text}</span>
-                    <FaArrowRight className="opacity-0 group-hover:opacity-100 transform group-hover:translate-x-2 transition-all duration-300" />
+        </div>
+      </div>
+      
+      {/* Main footer content */}
+      <div className="container mx-auto px-4 py-8 relative">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible" 
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {/* Company info column */}
+          <motion.div 
+            className="lg:col-span-2"
+            variants={itemVariants}
+          >
+            <Link href="/" className="inline-block mb-6">
+              <div className="flex items-center gap-2">
+                <Sun className="h-8 w-8 text-primary" />
+                <span className="text-2xl font-bold">LUMINEX</span>
+              </div>
+            </Link>
+            <p className="text-muted-foreground mb-6 max-w-sm">
+              Transforming the way homes and businesses harness energy with innovative solar solutions and smart technology for a sustainable future.
+            </p>
+            
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Phone className="h-4 w-4 text-primary" />
+                </div>
+                <span>1-800-SOLAR-POWER</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-primary" />
+                </div>
+                <span>contact@luminex.com</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <MapPin className="h-4 w-4 text-primary" />
+                </div>
+                <span>123 Solar Avenue, Sunshine City</span>
+              </div>
+            </div>
+            
+            {/* Social links */}
+            <div className="flex flex-wrap gap-3">
+              <TooltipProvider>
+                {socialLinks.map((social, index) => (
+                  <Tooltip key={index}>
+                    <TooltipTrigger asChild>
+                      <motion.a 
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${social.color}`}
+                      >
+                        {social.icon}
+                      </motion.a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Follow us on {social.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </TooltipProvider>
+            </div>
+          </motion.div>
+          
+          {/* Links columns */}
+          <motion.div variants={itemVariants} className="lg:col-span-1">
+            <h3 className="font-semibold text-lg mb-4">Solutions</h3>
+            <ul className="space-y-3">
+              {footerLinks.solutions.map((link, index) => (
+                <motion.li key={index} whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
+                  <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                    <ChevronRight className="w-3 h-3" />
+                    {link.name}
                   </Link>
-                </li>
+                </motion.li>
               ))}
             </ul>
           </motion.div>
-
-          {/* Contact Info */}
-          <motion.div className="space-y-6">
-            <h4 className="text-xl font-bold  relative inline-block">
-              Get in Touch
-              <span className="absolute bottom-0 left-0 w-1/2 h-1 bg-primary rounded-full"></span>
-            </h4>
-            <div className="space-y-4">
-              <a href="tel:5551234567" className="flex items-center gap-4 p-3 rounded-lg bg-footer-light hover:bg-primary/20 transition-all duration-300">
-                <div className="bg-primary rounded-full p-2">
-                  <FaPhoneAlt className="" />
-                </div>
-                <div>
-                  <p className="text-sm ">Call Us</p>
-                  <p className="">(555) 123-4567</p>
-                </div>
-              </a>
-              <a href="mailto:info@solartech.com" className="flex items-center gap-4 p-3 rounded-lg bg-footer-light hover:bg-primary/20 transition-all duration-300">
-                <div className="bg-primary rounded-full p-2">
-                  <FaEnvelope className="" />
-                </div>
-                <div>
-                  <p className="text-sm ">Email Us</p>
-                  <p className="">info@solartech.com</p>
-                </div>
-              </a>
-              <div className="flex items-center gap-4 p-3 rounded-lg bg-footer-light hover:bg-primary/20 transition-all duration-300">
-                <div className="bg-primary rounded-full p-2">
-                  <FaMapMarkerAlt className="" />
-                </div>
-                <div>
-                  <p className="text-sm ">Visit Us</p>
-                  <p className="">123 Solar Street, Sunshine City, SC 12345</p>
-                </div>
-              </div>
-            </div>
+          
+          <motion.div variants={itemVariants} className="lg:col-span-1">
+            <h3 className="font-semibold text-lg mb-4">Company</h3>
+            <ul className="space-y-3">
+              {footerLinks.company.map((link, index) => (
+                <motion.li key={index} whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
+                  <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                    <ChevronRight className="w-3 h-3" />
+                    {link.name}
+                  </Link>
+                </motion.li>
+              ))}
+            </ul>
           </motion.div>
+          
+          <motion.div variants={itemVariants} className="lg:col-span-1">
+            <h3 className="font-semibold text-lg mb-4">Resources</h3>
+            <ul className="space-y-3">
+              {footerLinks.resources.map((link, index) => (
+                <motion.li key={index} whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
+                  <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                    <ChevronRight className="w-3 h-3" />
+                    {link.name}
+                  </Link>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+          
+          <motion.div variants={itemVariants} className="lg:col-span-1">
+            <h3 className="font-semibold text-lg mb-4">Support</h3>
+            <ul className="space-y-3">
+              {footerLinks.support.map((link, index) => (
+                <motion.li key={index} whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
+                <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                  <ChevronRight className="w-3 h-3" />
+                  {link.name}
+                </Link>
+              </motion.li>
+            ))}
+          </ul>
+        </motion.div>
+      </motion.div>
 
-          {/* Newsletter */}
-          <motion.div className="space-y-6">
-            <h4 className="text-xl font-bold  relative inline-block">
-              Newsletter
-              <span className="absolute bottom-0 left-0 w-1/2 h-1 bg-primary rounded-full"></span>
-            </h4>
-            <p className="">Join our community and stay informed about solar innovations and exclusive offers.</p>
-            <form className="space-y-3">
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-3 rounded-lg bg-footer-light border-2 border-transparent focus:border-primary focus:outline-none transition-all duration-300  placeholder-gray-400"
-                />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 ">✉️</div>
-              </div>
-              <button 
-                type="submit"
-                className="w-full bg-primary  py-3 rounded-lg font-semibold hover:bg-primary-dark transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-primary/50"
-              >
-                Subscribe Now
-              </button>
-            </form>
+      {/* Copyright and legal links */}
+      <div className="mt-8 pt-8 border-t border-border">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <motion.p 
+            className="text-sm text-muted-foreground mt-4"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
+          >
+            © {currentYear} LUMINEX Engineering (Pvt) Ltd. All rights reserved.
+          </motion.p>
+          
+          <motion.div 
+            className="flex flex-wrap mt-4 gap-6 justify-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.7 }}
+          >
+            <Link href="/privacy-policy" className="text-sm text-primary hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="text-sm text-primary hover:text-primary transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/cookies" className="text-sm text-primary hover:text-primary transition-colors">
+              Cookie Policy
+            </Link>
           </motion.div>
         </div>
-
-        {/* Social Links & Copyright */}
-        <motion.div 
+        
+        {/* Final note */}
+        <motion.p 
+          className="text-xs text-center mt-8"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-16 pt-8 border-t border-gray-700"
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8 }}
         >
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
-            <div className="flex space-x-6">
-              {[
-                { Icon: FaFacebookF, href: '#', color: '#1877F2' },
-                { Icon: FaTwitter, href: '#', color: '#1DA1F2' },
-                { Icon: FaInstagram, href: '#', color: '#E4405F' },
-                { Icon: FaLinkedinIn, href: '#', color: '#0A66C2' }
-              ].map(({ Icon, href, color }, index) => (
-                <Link 
-                  key={index} 
-                  href={href} 
-                  className="bg-footer-light p-3 rounded-full hover:bg-primary transition-all duration-300 transform hover:scale-110"
-                >
-                  <Icon className="text-xl" style={{ color }} />
-                </Link>
-              ))}
-            </div>
-            <div className="text-center md:text-right">
-              <p className=" text-sm">
-                © {new Date().getFullYear()} SolarTech Solutions. All rights reserved.
-              </p>
-              <div className="flex items-center justify-center md:justify-end space-x-4 mt-2 text-sm">
-                <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-                <span>•</span>
-                <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+          Designed and developed with <Heart className="inline-block w-4 h-4 text-green-500 fill-green-500" /> by <Link href="https://www.trimids.com" className="hover:text-primary transition-colors">TRIMIDS Innovations</Link>.  
+        </motion.p>      
       </div>
-    </footer>
-  );
-};
+    </div>
+  </footer>
+)
+}

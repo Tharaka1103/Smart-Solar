@@ -3,10 +3,13 @@ import { connectToDatabase } from '@/lib/db';
 import Finance from '@/models/Finance';
 
 // Get finance by ID
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request) {
   try {
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
+    
     await connectToDatabase();
-    const finance = await Finance.findById(params.id);
+    const finance = await Finance.findById(id);
     
     if (!finance) {
       return NextResponse.json({ error: 'Finance record not found' }, { status: 404 });
@@ -20,13 +23,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 }
 
 // Update finance
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request) {
   try {
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
     const body = await req.json();
     await connectToDatabase();
     
     const updatedFinance = await Finance.findByIdAndUpdate(
-      params.id,
+      id,
       body,
       { new: true, runValidators: true }
     );
@@ -43,10 +48,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 // Delete finance
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request) {
   try {
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
     await connectToDatabase();
-    const deletedFinance = await Finance.findByIdAndDelete(params.id);
+    const deletedFinance = await Finance.findByIdAndDelete(id);
     
     if (!deletedFinance) {
       return NextResponse.json({ error: 'Finance record not found' }, { status: 404 });

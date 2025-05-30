@@ -1,156 +1,388 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import Link from "next/link"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { motion } from "framer-motion"
-import { Mail, AlertCircle, ArrowLeft } from "lucide-react"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Mail, Lock, KeyRound, ArrowRight, Check, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { SparklesText } from '@/components/magicui/sparkles-text';
 
-import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { connectToDatabase } from "@/lib/db"
-import User from "@/models/User"
-
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-})
+enum ResetStage {
+  REQUEST_OTP,
+  VERIFY_OTP,
+  RESET_PASSWORD,
+  SUCCESS
+}
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState(false)
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [stage, setStage] = useState<ResetStage>(ResetStage.REQUEST_OTP);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-    },
-  })
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    setError("")
-    
-    try {
-      // Send password reset request to API
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: values.email }),
-      })
-      
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to send reset email")
-      }
-      
-      setSuccess(true)
-    } catch (error: any) {
-      console.error("Password reset error:", error)
-      setError(error.message || "Failed to send password reset email. Please try again.")
-    } finally {
-      setIsLoading(false)
+  const handleSendOtp = async () => {
+    if (!email) {
+      setError('Please enter your email address');
+      return;
     }
-  }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setStage(ResetStage.VERIFY_OTP);
+      } else {
+        setError(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      setError('Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const combinedOtp = otpDigits.join('');
+    if (combinedOtp.length !== 6) {
+      setError('Please enter all 6 digits of the OTP');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: combinedOtp }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.verified) {
+        setStage(ResetStage.RESET_PASSWORD);
+      } else {
+        setError(data.message || 'Invalid OTP');
+      }
+    } catch (error) {
+      setError('Failed to verify OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!password) {
+      setError('Please enter your new password');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email, 
+          otp: otpDigits.join(''), 
+          password 
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setStage(ResetStage.SUCCESS);
+      } else {
+        setError(data.message || 'Failed to reset password');
+      }
+    } catch (error) {
+      setError('Failed to reset password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    // Only allow digits
+    if (value && !/^\d+$/.test(value)) return;
+
+    const newOtpDigits = [...otpDigits];
+    newOtpDigits[index] = value;
+    setOtpDigits(newOtpDigits);
+
+    // Auto-focus on next input field
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    // Handle backspace to move to previous field
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const renderStageContent = () => {
+    switch (stage) {
+      case ResetStage.REQUEST_OTP:
+        return (
+          <>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center">Forgot Password</CardTitle>
+              <CardDescription className="text-center">
+                Enter your email address and we'll send you an OTP to reset your password
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    type="email"
+                    placeholder="Email address"
+                    className="pl-10"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="w-full"
+                onClick={handleSendOtp}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending OTP...
+                  </>
+                ) : (
+                  <>
+                    Send OTP
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CardFooter>
+          </>
+        );
+      
+      case ResetStage.VERIFY_OTP:
+        return (
+          <>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center">Verify OTP</CardTitle>
+              <CardDescription className="text-center">
+                We've sent a 6-digit code to {email}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-center gap-2">
+                {otpDigits.map((digit, index) => (
+                  <Input
+                    key={index}
+                    id={`otp-${index}`}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    className="h-12 w-12 text-center text-lg"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    disabled={isLoading}
+                  />
+                ))}
+              </div>
+              <p className="text-center text-sm text-muted-foreground">
+                Didn't receive the code?{" "}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto"
+                  onClick={handleSendOtp}
+                  disabled={isLoading}
+                >
+                  Resend
+                </Button>
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="w-full"
+                onClick={handleVerifyOtp}
+                disabled={isLoading || otpDigits.join("").length !== 6}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  <>
+                    Verify OTP
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CardFooter>
+          </>
+        );
+      
+      case ResetStage.RESET_PASSWORD:
+        return (
+          <>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center">Reset Password</CardTitle>
+              <CardDescription className="text-center">
+                Enter your new password
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    type="password"
+                    placeholder="New password"
+                    className="pl-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="relative">
+                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    type="password"
+                    placeholder="Confirm password"
+                    className="pl-10"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="w-full"
+                onClick={handleResetPassword}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Resetting Password...
+                  </>
+                ) : (
+                  <>
+                    Reset Password
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CardFooter>
+          </>
+        );
+      
+      case ResetStage.SUCCESS:
+        return (
+          <>
+            <CardHeader>
+              <div className="mx-auto mb-4 rounded-full bg-green-100 p-3">
+                <Check className="h-8 w-8 text-green-600" />
+              </div>
+              <CardTitle className="text-2xl font-bold text-center">Password Reset Successful</CardTitle>
+              <CardDescription className="text-center">
+                Your password has been reset successfully
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="mb-4">You can now login with your new password</p>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="w-full"
+                onClick={() => router.push('/login')}
+              >
+                Go to Login
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </>
+        );
+    }
+  };
 
   return (
-    <div className="container flex items-center justify-center min-h-screen py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        <Card className="border-2 border-primary/10 shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-3xl font-bold text-center">Reset Password</CardTitle>
-            <CardDescription className="text-center">
-              Enter your email address and we'll send you a link to reset your password
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-md w-full"
+        >
+          <div className="text-center mb-8">
+            <SparklesText
+              text="Luminex Engineering"
+              colors={{ first: "#10b981", second: "#059669" }}
+              className="text-4xl mb-2"
+            />
+            <p className="text-muted-foreground">Password Recovery System</p>
+          </div>
+          
+          <Card className="w-full border border-border/30 shadow-lg">
             {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3"
+              >
+                <Alert variant="destructive" className="bg-red-50 text-red-800 border-red-200">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              </motion.div>
             )}
             
-            {success ? (
-              <Alert>
-                <AlertDescription>
-                  If an account exists with that email, we've sent password reset instructions to your inbox.
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                              placeholder="name@example.com" 
-                              className="pl-10" 
-                              disabled={isLoading} 
-                              {...field} 
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Sending...
-                      </div>
-                    ) : "Send Reset Link"}
-                  </Button>
-                </form>
-              </Form>
-            )}
-          </CardContent>
-          <CardFooter className="flex justify-center">
-            <Link 
-              href="/signin" 
-              className="flex items-center text-sm text-primary hover:underline"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Sign In
-            </Link>
-          </CardFooter>
-        </Card>
-      </motion.div>
+            {renderStageContent()}
+          </Card>
+        </motion.div>
     </div>
-  )
+  );
 }

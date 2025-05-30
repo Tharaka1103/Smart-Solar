@@ -155,10 +155,6 @@ export default function FinanceManagement() {
       if (!res.ok) throw new Error('Failed to fetch finances');
       const data = await res.json();
       setFinances(data);
-      successt({
-        title: "Finance data load successfully!",
-        description: "Your finance data have been loaded successfully.",
-      })
     } catch (error) {
       console.error('Error fetching finances:', error);
       errort({
@@ -483,23 +479,6 @@ export default function FinanceManagement() {
                               {...field} 
                             />
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="attachmentUrl"
-                      render={({ field }) => (
-                        <FormItem className="transition-all duration-200 hover:shadow-sm">
-                          <FormLabel className="text-base">Attachment URL (Optional)</FormLabel>
-                          <FormControl>
-                            <Input className="h-11" placeholder="URL to receipt or invoice" {...field} />
-                          </FormControl>
-                          <FormDescription className="text-sm mt-2">
-                            Provide a link to any relevant document or receipt.
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1060,8 +1039,8 @@ export default function FinanceManagement() {
                           <FormLabel>Amount</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                              <Input type="number" step="0.01" className="pl-10" {...field} />
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2">LKR</span>
+                            <Input type="number" step="0.01" className="pl-12" {...field} />
                             </div>
                           </FormControl>
                           <FormMessage />
