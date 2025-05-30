@@ -897,43 +897,46 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-4">
                     {employee.documents.map((doc) => (
-                      <div key={doc._id} className="border rounded-lg p-4 space-y-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start space-x-3">
-                            <span className="text-2xl">{getFileIcon(doc.fileType)}</span>
+                      <div key={doc._id} className="border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-0">
+                          <div className="flex items-start space-x-2 sm:space-x-3 w-full sm:w-auto">
+                            <span className="text-xl sm:text-2xl">{getFileIcon(doc.fileType)}</span>
                             <div className="min-w-0 flex-1">
-                              <p className="font-medium truncate">{doc.originalName}</p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="font-medium truncate text-sm sm:text-base">{doc.originalName}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground">
                                 {formatFileSize(doc.fileSize)} • {format(new Date(doc.uploadedAt), 'MMM dd, yyyy')}
                               </p>
                               {doc.description && (
-                                <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{doc.description}</p>
                               )}
                             </div>
                           </div>
-                          <div className="flex space-x-1">
+                          <div className="flex space-x-1 w-full sm:w-auto justify-end">
                             <Button
                               variant="outline"
                               size="sm"
+                              className="h-8 w-8 sm:h-9 sm:w-9"
                               onClick={() => window.open(doc.webViewLink, '_blank')}
                             >
-                              <Eye className="h-4 w-4" />
+                              <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
+                              className="h-8 w-8 sm:h-9 sm:w-9"
                               onClick={() => window.open(doc.webViewLink, '_blank')}
                             >
-                              <ExternalLink className="h-4 w-4" />
+                              <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                             <Button
                               variant="destructive"
                               size="sm"
+                              className="h-8 w-8 sm:h-9 sm:w-9"
                               onClick={() => setDocumentToDelete(doc)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
                         </div>
