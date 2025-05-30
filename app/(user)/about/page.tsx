@@ -134,9 +134,10 @@ const AboutPage = () => {
               className="relative h-[500px] rounded-2xl overflow-hidden shadow-xl"
             >
               <Image
-                src="/images/solar-installation.jpg"
+                src="/engineer.png"
                 alt="Solar installation by Luminex Engineering"
-                fill
+                width={500}
+                height={800}
                 className="object-cover"
               />
             </motion.div>

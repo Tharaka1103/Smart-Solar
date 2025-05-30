@@ -11,7 +11,10 @@ import {
   FileText,
   BarChart3,
   Plus,
-  X
+  X,
+  Eclipse,
+  Ellipsis,
+  EllipsisVertical
 } from 'lucide-react';
 
 // Menu items configuration
@@ -82,7 +85,7 @@ export function QuickAccessMenu() {
           animate={{ rotate: isOpen ? 90 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          {isOpen ? <X size={24} /> : <Plus size={24} />}
+          {isOpen ? <X size={24} /> : <EllipsisVertical size={24} />}
         </motion.div>
       </motion.button>
 

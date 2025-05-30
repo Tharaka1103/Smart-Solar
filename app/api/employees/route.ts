@@ -13,8 +13,8 @@ export async function GET(req: NextRequest) {
     const role = searchParams.get('role');
     const search = searchParams.get('search');
     
-    // Build query
-    let query: any = {};
+    // Build query - exclude soft deleted employees
+    let query: any = { isDeleted: { $ne: true } };
     if (role) query.role = role;
     if (search) {
       query.$or = [
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const data = await req.json();
     
     // Validate required fields
-    if (!data.name || !data.email || !data.role || !data.contact || !data.address || !data.hourlyRate) {
+    if (!data.name || !data.email || !data.role || !data.contact || !data.address || !data.dailyRate) {
       return NextResponse.json(
         { message: 'All fields are required' },
         { status: 400 }
@@ -59,7 +59,10 @@ export async function POST(req: NextRequest) {
     }
     
     // Check for existing employee with same email
-    const existingEmployee = await Employee.findOne({ email: data.email });
+    const existingEmployee = await Employee.findOne({ 
+      email: data.email, 
+      isDeleted: { $ne: true } 
+    });
     if (existingEmployee) {
       return NextResponse.json(
         { message: 'Employee with this email already exists' },
@@ -67,7 +70,12 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    const employee = new Employee(data);
+    const employee = new Employee({
+      ...data,
+      attendance: [],
+      documents: [],
+      isDeleted: false
+    });
     await employee.save();
     
     return NextResponse.json(employee, { status: 201 });

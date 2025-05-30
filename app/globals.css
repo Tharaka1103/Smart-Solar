@@ -23,7 +23,7 @@ body {
     --muted-foreground: #757575;
     --accent: #F4F4F5;
     --accent-foreground: #1A1A1C;
-    --destructive: #E11D48;
+    --destructive: #ff0000;
     --destructive-foreground: #FAFAFA;
     --border: #E5E5E7;
     --input: #E5E5E7;
@@ -59,7 +59,7 @@ body {
     --muted-foreground: #A3A3A3;
     --accent: #292524;
     --accent-foreground: #FAFAFA;
-    --destructive: #7F1D1D;
+    --destructive: #680000;
     --destructive-foreground: #FEF2F2;
     --border: #27272A;
     --input: #27272A;

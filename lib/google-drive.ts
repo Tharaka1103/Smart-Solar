@@ -123,6 +123,64 @@ export async function getDriveInstance() {
 }
 
 /**
+ * Create a folder in Google Drive
+ */
+async function createFolder(drive: any, folderName: string, parentId?: string) {
+  const fileMetadata: any = {
+    name: folderName,
+    mimeType: 'application/vnd.google-apps.folder',
+  };
+  
+  if (parentId) {
+    fileMetadata.parents = [parentId];
+  }
+  
+  try {
+    const response = await drive.files.create({
+      requestBody: fileMetadata,
+      fields: 'id',
+    });
+    
+    // Set folder to be readable by anyone with the link
+    await drive.permissions.create({
+      fileId: response.data.id,
+      requestBody: {
+        role: 'reader',
+        type: 'anyone',
+      },
+    });
+    
+    return response.data.id;
+  } catch (error) {
+    console.error('Error creating folder:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get or create folder by name
+ */
+async function getOrCreateFolder(drive: any, folderName: string) {
+  try {
+    // Search for existing folder
+    const response = await drive.files.list({
+      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields: 'files(id, name)',
+    });
+    
+    if (response.data.files && response.data.files.length > 0) {
+      return response.data.files[0].id;
+    }
+    
+    // Create folder if it doesn't exist
+    return await createFolder(drive, folderName);
+  } catch (error) {
+    console.error('Error getting or creating folder:', error);
+    throw error;
+  }
+}
+
+/**
  * Upload a file to Google Drive
  * Function overloads to support both string paths and Buffers
  */
@@ -153,23 +211,43 @@ export async function uploadFile(fileInput: string | Buffer, fileName: string, m
     throw new Error('Invalid file input - must be Buffer or file path string');
   }
   
-  // Modified fileMetadata - removing parents if it's causing issues
+  // Prepare file metadata
   const fileMetadata: any = {
     name: fileName,
-    // Only add parents if folder ID exists and is valid
   };
   
-  // Check if folder ID exists before using it
+  // Handle folder logic
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
   if (folderId && folderId.trim() !== '') {
-    // Check if folder exists and is accessible
     try {
+      // Try to use the provided folder ID
       await drive.files.get({ fileId: folderId });
-      // If we get here, the folder exists and is accessible
       fileMetadata.parents = [folderId];
+      console.log(`Uploading to folder: ${folderId}`);
     } catch (folderError) {
-      console.warn(`Warning: Could not access folder ID ${folderId} - uploading to root instead:`, folderError);
-      // Continue without parents - will upload to root
+      console.warn(`Warning: Could not access folder ID ${folderId} - creating default folder instead`);
+      
+      try {
+        // Create or get default folder
+        const defaultFolderId = await getOrCreateFolder(drive, 'Employee Documents');
+        fileMetadata.parents = [defaultFolderId];
+        console.log(`Created/using default folder: ${defaultFolderId}`);
+        
+        // Optionally update environment variable for future use
+        console.log(`Consider updating GOOGLE_DRIVE_FOLDER_ID to: ${defaultFolderId}`);
+      } catch (createError) {
+        console.warn('Could not create default folder - uploading to root instead:', createError);
+        // Continue without parents - will upload to root
+      }
+    }
+  } else {
+    // No folder ID provided, create a default folder
+    try {
+      const defaultFolderId = await getOrCreateFolder(drive, 'Employee Documents');
+      fileMetadata.parents = [defaultFolderId];
+      console.log(`Using default folder: ${defaultFolderId}`);
+    } catch (createError) {
+      console.warn('Could not create default folder - uploading to root instead:', createError);
     }
   }
   
