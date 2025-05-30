@@ -767,38 +767,42 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
     <div className="container mx-auto p-4 space-y-6">
       {/* Header */}
       <motion.div 
-        className="flex items-center justify-between"
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
           <Button 
             variant="outline" 
             onClick={() => router.push('/admin/employee')}
+            className="w-full sm:w-auto"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">{employee.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">{employee.name}</h1>
             <p className="text-muted-foreground">{employee.role}</p>
           </div>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
           <Button 
             variant="outline"
             onClick={() => setOpenDocumentDialog(true)}
+            className="w-full sm:w-auto"
           >
             <Upload className="mr-2 h-4 w-4" />
             Upload Documents
           </Button>
-          <Button onClick={openAddAttendanceDialog}>
+          <Button 
+            onClick={openAddAttendanceDialog}
+            className="w-full sm:w-auto"
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Attendance
           </Button>
         </div>
       </motion.div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
@@ -1104,8 +1108,8 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                     })()}
                                 </div>
                                 
-                                <div className="mt-4 flex items-center justify-between">
-                                    <div className="flex items-center space-x-4 text-xs">
+                                <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <div className="flex flex-wrap gap-3 text-xs">
                                     <div className="flex items-center space-x-1">
                                         <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
                                         <span>Full Day</span>
@@ -1128,7 +1132,7 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                     </div>
                                     </div>
                                     
-                                    <div className="flex space-x-2">
+                                    <div className="flex flex-wrap gap-2">
                                     {attendance.useOverrideSalary && (
                                         <Badge variant="outline" className="text-xs">
                                         <AlertCircle className="mr-1 h-3 w-3" />
@@ -1139,6 +1143,7 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => handleEditAttendance(attendance)}
+                                        className="w-full sm:w-auto"
                                     >
                                         <Edit className="h-4 w-4 mr-1" />
                                         Edit
@@ -1147,12 +1152,13 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                         variant="destructive"
                                         size="sm"
                                         onClick={() => handleDeleteAttendanceClick(attendance)}
+                                        className="w-full sm:w-auto"
                                     >
                                         <Trash2 className="h-4 w-4 mr-1" />
                                         Delete
                                     </Button>
-                                    </div>
-                                </div>
+                                  </div>
+                              </div>
                             </div>
                           </div>
                         );
