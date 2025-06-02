@@ -482,7 +482,7 @@ export default function EmployeePage() {
             }}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add Employee Test
+            Add Employee
           </Button>
         </motion.div>
       </div>
