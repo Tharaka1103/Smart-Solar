@@ -331,3 +331,21 @@ export async function getDownloadUrl(fileId: string) {
     throw error;
   }
 }
+
+/**
+ * Delete a file from Google Drive
+ */
+export async function deleteFile(fileId: string) {
+  const drive = await getDriveInstance();
+  
+  try {
+    await drive.files.delete({
+      fileId: fileId,
+    });
+    
+    console.log(`File ${fileId} deleted successfully`);
+  } catch (error) {
+    console.error('Error deleting file from Google Drive:', error);
+    throw error;
+  }
+}

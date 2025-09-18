@@ -767,42 +767,38 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
     <div className="container mx-auto p-4 space-y-6">
       {/* Header */}
       <motion.div 
-        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0"
+        className="flex items-center justify-between"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+        <div className="flex items-center space-x-4">
           <Button 
             variant="outline" 
             onClick={() => router.push('/admin/employee')}
-            className="w-full sm:w-auto"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">{employee.name}</h1>
+            <h1 className="text-3xl font-bold">{employee.name}</h1>
             <p className="text-muted-foreground">{employee.role}</p>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+        <div className="flex space-x-2">
           <Button 
             variant="outline"
             onClick={() => setOpenDocumentDialog(true)}
-            className="w-full sm:w-auto"
           >
             <Upload className="mr-2 h-4 w-4" />
             Upload Documents
           </Button>
-          <Button 
-            onClick={openAddAttendanceDialog}
-            className="w-full sm:w-auto"
-          >
+          <Button onClick={openAddAttendanceDialog}>
             <Plus className="mr-2 h-4 w-4" />
             Add Attendance
           </Button>
         </div>
       </motion.div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
@@ -897,46 +893,43 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {employee.documents.map((doc) => (
-                      <div key={doc._id} className="border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
-                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-0">
-                          <div className="flex items-start space-x-2 sm:space-x-3 w-full sm:w-auto">
-                            <span className="text-xl sm:text-2xl">{getFileIcon(doc.fileType)}</span>
+                      <div key={doc._id} className="border rounded-lg p-4 space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-3">
+                            <span className="text-2xl">{getFileIcon(doc.fileType)}</span>
                             <div className="min-w-0 flex-1">
-                              <p className="font-medium truncate text-sm sm:text-base">{doc.originalName}</p>
-                              <p className="text-xs sm:text-sm text-muted-foreground">
+                              <p className="font-medium truncate">{doc.originalName}</p>
+                              <p className="text-sm text-muted-foreground">
                                 {formatFileSize(doc.fileSize)} • {format(new Date(doc.uploadedAt), 'MMM dd, yyyy')}
                               </p>
                               {doc.description && (
-                                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{doc.description}</p>
+                                <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
                               )}
                             </div>
                           </div>
-                          <div className="flex space-x-1 w-full sm:w-auto justify-end">
+                          <div className="flex space-x-1">
                             <Button
                               variant="outline"
                               size="sm"
-                              className="h-8 w-8 sm:h-9 sm:w-9"
                               onClick={() => window.open(doc.webViewLink, '_blank')}
                             >
-                              <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <Eye className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
-                              className="h-8 w-8 sm:h-9 sm:w-9"
                               onClick={() => window.open(doc.webViewLink, '_blank')}
                             >
-                              <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <ExternalLink className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="destructive"
                               size="sm"
-                              className="h-8 w-8 sm:h-9 sm:w-9"
                               onClick={() => setDocumentToDelete(doc)}
                             >
-                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
@@ -1111,8 +1104,8 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                     })()}
                                 </div>
                                 
-                                <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                    <div className="flex flex-wrap gap-3 text-xs">
+                                <div className="mt-4 flex items-center justify-between">
+                                    <div className="flex items-center space-x-4 text-xs">
                                     <div className="flex items-center space-x-1">
                                         <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
                                         <span>Full Day</span>
@@ -1135,7 +1128,7 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                     </div>
                                     </div>
                                     
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex space-x-2">
                                     {attendance.useOverrideSalary && (
                                         <Badge variant="outline" className="text-xs">
                                         <AlertCircle className="mr-1 h-3 w-3" />
@@ -1146,7 +1139,6 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => handleEditAttendance(attendance)}
-                                        className="w-full sm:w-auto"
                                     >
                                         <Edit className="h-4 w-4 mr-1" />
                                         Edit
@@ -1155,13 +1147,12 @@ const prepareAddFormWithExisting = (existingAttendance: AttendanceMonth) => {
                                         variant="destructive"
                                         size="sm"
                                         onClick={() => handleDeleteAttendanceClick(attendance)}
-                                        className="w-full sm:w-auto"
                                     >
                                         <Trash2 className="h-4 w-4 mr-1" />
                                         Delete
                                     </Button>
-                                  </div>
-                              </div>
+                                    </div>
+                                </div>
                             </div>
                           </div>
                         );
